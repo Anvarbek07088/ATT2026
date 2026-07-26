@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Attestatsiya 2026 — Informatika fani test markazi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,500;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #f7f9fc;
+    --paper-raised: #ffffff;
+    --line: #e4ecf3;
+    --line-strong: #c8d5e2;
+    --ink: #18324b;
+    --ink-soft: #4e6177;
+    --ink-faint: #7a8797;
+    --accent: #4e7fa8;
+    --accent-deep: #315b7d;
+    --accent-soft: #edf5fb;
+    --seal: #b8904c;
+    --seal-soft: #f7efe2;
+    --good: #3f8f6b;
+    --good-soft: #eef8f2;
+    --bad: #cc6b6b;
+    --bad-soft: #fcf0f0;
+    --radius-sm: 8px;
+    --radius: 16px;
+  }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:'IBM Plex Sans', sans-serif;
+    color:#12304f;
+    background:linear-gradient(135deg, #f8fafc 0%, #f3f6fa 45%, #eef3f7 100%);
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{ background:#dcebf5; color:#12304f; }
+  .hidden{ display:none !important; }
+
+  .wrap{ max-width:1040px; margin:0 auto; padding:0 20px 90px; position:relative; }
+  .wrap::before, .wrap::after{
+    content:""; position:fixed; z-index:-1; border-radius:50%; pointer-events:none; filter:blur(6px); animation:floatBlob 10s ease-in-out infinite;
+  }
+  .wrap::before{ width:260px; height:260px; top:4%; left:-60px; background:rgba(133,171,200,.12); }
+  .wrap::after{ width:220px; height:220px; bottom:6%; right:-50px; background:rgba(255,255,255,.7); animation-delay:-4s; }
+  @keyframes floatBlob{ 0%,100%{ transform:translate3d(0,0,0) scale(1); } 50%{ transform:translate3d(12px,-14px,0) scale(1.03); } }
+
+  a{ color:#2f89c7; }
+
+  /* ============ LETTERHEAD ============ */
+  .letterhead{
+    padding:42px 32px 30px;
+    border:1px solid #e3ebf2;
+    border-radius:24px;
+    position:relative;
+    background:linear-gradient(135deg, #fcfdff 0%, #f4f8fb 100%);
+    backdrop-filter:blur(16px);
+    box-shadow:0 16px 36px rgba(18,48,79,.08);
+  }
+  .letterhead::before{
+    content:"";
+    position:absolute; left:24px; right:24px; bottom:-10px; height:1px;
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,.4), transparent);
+  }
+  .lh-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:20px; margin-bottom:34px; }
+  .crest{
+    width:58px; height:58px; border:1px solid #e2ebf3; border-radius:16px;
+    display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:12.5px; letter-spacing:-0.02em;
+    color:#12304f;
+    background:linear-gradient(135deg, #f6f9fc 0%, #eaf3fa 100%);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.35);
+  }
+  .lh-meta{ text-align:right; font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--ink-faint); line-height:1.6; }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:#2f89c7; margin:0 0 14px; font-weight:600;
+  }
+  h1.hero{
+    font-family:'Source Serif 4', serif; font-weight:700; letter-spacing:-0.01em;
+    font-size: clamp(38px, 6vw, 58px); line-height:1; margin:0 0 16px; color:#12304f;
+  }
+  h1.hero em{ font-style:normal; color:#2f89c7; }
+  p.lede{ font-size:16px; color:#51657d; max-width:640px; line-height:1.75; margin:0; }
+
+  .stat-row{ display:flex; gap:40px; margin-top:32px; flex-wrap:wrap; }
+  .hero-pills{ display:flex; gap:10px; flex-wrap:wrap; margin-top:20px; }
+  .hero-pill{ display:inline-flex; align-items:center; gap:8px; padding:9px 12px; border-radius:999px; background:#f7fafe; border:1px solid #e1ebf2; color:#12304f; font-size:12px; font-weight:600; box-shadow:0 6px 16px -12px rgba(18,48,79,.14); }
+  .hero-pill::before{ content:"•"; color:#4e7fa8; font-size:16px; }
+  .stat{ display:flex; flex-direction:column; gap:2px; }
+  .stat .num{ font-family:'Source Serif 4', serif; font-weight:600; font-size:28px; color:var(--ink); }
+  .stat .lbl{ font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--ink-faint); text-transform:uppercase; letter-spacing:.06em; }
+
+  /* ============ TABS ============ */
+  .tabs{ display:flex; gap:8px; margin-top:18px; position:sticky; top:0; background:rgba(255,255,255,.9); backdrop-filter:blur(12px); z-index:5; padding:10px; border-radius:16px; border:1px solid #e2ebf3; box-shadow:0 10px 24px rgba(18,48,79,.06); }
+  .tab{
+    font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:12.5px; letter-spacing:.03em;
+    color:#51657d; background:transparent; border:none; padding:10px 14px; cursor:pointer;
+    transition:.2s ease; text-transform:uppercase; border-radius:999px;
+  }
+  .tab:hover{ color:#12304f; background:#f5faff; }
+  .tab.active{ color:#12304f; background:linear-gradient(135deg, #eef5fb, #e5eff7); }
+
+  /* ============ SECTION ============ */
+  .section{ padding-top:38px; }
+  .section-head{ display:flex; align-items:baseline; justify-content:space-between; gap:16px; margin-bottom:6px; flex-wrap:wrap; }
+  .section-num{ font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--accent-deep); letter-spacing:.1em; font-weight:600; }
+  .section-title{ font-family:'Source Serif 4', serif; font-size:24px; font-weight:600; margin:2px 0 6px; }
+  .section-desc{ font-size:13.5px; color:var(--ink-soft); margin:0 0 22px; max-width:560px; line-height:1.55; }
+
+  /* ============ TICKET ROWS ============ */
+  .tickets{ display:flex; flex-direction:column; }
+  .ticket{
+    position:relative;
+    display:grid; grid-template-columns:56px 1fr 148px; align-items:center; gap:18px;
+    background:linear-gradient(135deg, #ffffff 0%, #f8fbfe 100%); border:1px solid #e2ebf3; border-radius:16px;
+    padding:18px 20px; margin-bottom:12px; cursor:pointer; transition:border-color .15s ease, transform .15s ease, box-shadow .15s ease; backdrop-filter:blur(12px);
+  }
+  .ticket:hover{ border-color:#4e7fa8; transform:translateY(-2px); box-shadow:0 12px 24px -18px rgba(18,48,79,.18); }
+  @media (max-width:640px){
+    .ticket{ grid-template-columns:40px 1fr; grid-template-rows:auto auto; }
+    .ticket-side{ grid-column:1 / -1; flex-direction:row !important; justify-content:space-between; padding-top:12px; border-top:1px dashed var(--line); margin-top:6px; }
+  }
+
+  .ticket-num{
+    font-family:'Source Serif 4', serif; font-size:22px; font-weight:600; color:var(--ink-faint);
+    border-right:1px dashed var(--line-strong); padding-right:16px; text-align:center;
+  }
+  .ticket-num::before{ content:""; }
+  .ticket:hover .ticket-num{ color:var(--accent-deep); }
+
+  .ticket-body h3{ font-family:'IBM Plex Sans', sans-serif; font-weight:600; font-size:15.5px; margin:0 0 5px; color:#12304f; line-height:1.35; }
+  .ticket-body p{ font-size:12.5px; color:#51657d; margin:0 0 8px; line-height:1.5; }
+  .ticket-meta{ font-family:'IBM Plex Mono', monospace; font-size:11px; color:#7d8fa2; display:flex; gap:8px; align-items:center; }
+  .ticket-meta .dot{ opacity:.5; }
+
+  .ticket-side{ display:flex; flex-direction:column; align-items:flex-end; gap:10px; }
+  .seal{
+    font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:12.5px;
+    border:1.5px solid var(--seal); color:var(--seal); border-radius:999px; padding:4px 12px;
+    transform:rotate(-3deg);
+  }
+  .seal.good{ border-color:var(--good); color:var(--good); }
+  .seal.mid{ border-color:var(--seal); color:var(--seal); }
+  .seal.low{ border-color:var(--bad); color:var(--bad); }
+  .seal.empty{ border-color:var(--line-strong); color:var(--ink-faint); font-weight:500; transform:none; }
+
+  .btn-start{
+    font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:11.5px; letter-spacing:.03em;
+    background:linear-gradient(135deg, var(--accent-deep), var(--accent)); color:#fff; border:none; padding:9px 16px; border-radius:10px; cursor:pointer;
+    transition:.2s ease; white-space:nowrap; box-shadow:0 8px 18px -12px rgba(49,91,125,.4);
+  }
+  .ticket:hover .btn-start{ transform:translateY(-1px); box-shadow:0 10px 20px -12px rgba(49,91,125,.35); }
+
+  /* ============ ANNOUNCEMENTS ============ */
+  .board{ margin-top:56px; padding:26px 24px 8px; border:1px solid #e2ebf3; border-radius:20px; background:#ffffff; box-shadow:0 12px 28px rgba(18,48,79,.06); }
+  .board-header{ display:flex; align-items:flex-start; justify-content:space-between; gap:16px; margin-bottom:16px; flex-wrap:wrap; }
+  .board-title{ font-family:'Source Serif 4', serif; font-size:19px; font-weight:600; margin:0 0 4px; color:#12304f; }
+  .board-sub{ font-family:'IBM Plex Mono', monospace; font-size:11px; color:#7d8fa2; text-transform:uppercase; letter-spacing:.08em; margin:0; }
+  .support-chip{ display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:999px; background:linear-gradient(135deg, #f4f8fb, #f7efe2); color:var(--accent-deep); font-family:'IBM Plex Mono', monospace; font-size:10.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; border:1px solid #e1ebf2; }
+  .support-chip::before{ content:'✦'; color:var(--seal); }
+  .board-list{ display:flex; flex-direction:column; gap:0; }
+  .board-item{ display:grid; grid-template-columns:120px 1fr; gap:18px; padding:16px 0; border-bottom:1px dashed var(--line); transition:background .2s ease, transform .2s ease, border-radius .2s ease; }
+  .board-item:last-child{ border-bottom:none; }
+  .board-item:hover{ background:rgba(255,242,126,.14); border-radius:12px; padding:16px 12px; transform:translateX(4px); }
+  .board-tag{ font-family:'IBM Plex Mono', monospace; font-size:10.5px; font-weight:600; color:var(--seal); letter-spacing:.05em; padding-top:2px; }
+  .board-item h4{ font-family:'IBM Plex Sans',sans-serif; font-size:14px; font-weight:600; margin:0 0 5px; color:#12304f; }
+  .board-item p{ font-size:12.5px; color:#51657d; margin:0; line-height:1.55; }
+  .support-grid{ display:grid; grid-template-columns:repeat(3, minmax(0, 1fr)); gap:12px; margin-top:22px; }
+  .support-card{ display:flex; flex-direction:column; gap:8px; padding:16px 14px; border:1px solid #e3ebf2; border-radius:14px; background:linear-gradient(135deg, #fbfdff 0%, #f4f8fb 100%); color:var(--ink); text-decoration:none; transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease; }
+  .support-card:hover{ transform:translateY(-2px); box-shadow:0 10px 22px -20px rgba(18,48,79,.22); border-color:#4e7fa8; }
+  .support-icon{ width:38px; height:38px; border-radius:12px; display:grid; place-items:center; font-size:16px; background:linear-gradient(135deg, #eef5fb, #f7efe2); color:var(--accent-deep); }
+  .support-title{ font-size:13px; font-weight:700; color:var(--ink); }
+  .support-text{ font-size:12.5px; color:var(--ink-soft); line-height:1.55; }
+  .support-text strong{ color:var(--accent-deep); }
+
+  footer.foot{ text-align:center; font-family:'IBM Plex Mono', monospace; font-size:11px; color:#7d8fa2; margin-top:50px; letter-spacing:.03em; }
+
+  /* ============ LOGIN / AUTH ============ */
+  .wrap{ max-width:1100px; padding:0 22px 90px; }
+  .auth-screen{ min-height:100vh; display:grid; place-items:center; padding:28px 0; }
+  .auth-card{ width:min(100%, 980px); display:grid; grid-template-columns:1.1fr .9fr; background:linear-gradient(135deg, #ffffff 0%, #f7fbff 100%); border:1px solid #e2ebf3; border-radius:24px; overflow:hidden; box-shadow:0 18px 46px rgba(18,48,79,.08); backdrop-filter:blur(16px); }
+  .auth-intro{ padding:42px 36px; background:linear-gradient(135deg, #f6f9fc 0%, #eef5fb 100%); color:#12304f; display:flex; flex-direction:column; justify-content:center; border-right:1px solid #e7eef5; }
+  .auth-badge{ display:inline-flex; width:max-content; padding:8px 14px; border-radius:999px; background:#ffffff; font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:.14em; text-transform:uppercase; margin-bottom:22px; }
+  .auth-intro h1{ font-family:'Source Serif 4', serif; font-size:34px; line-height:1.12; margin:0 0 12px; }
+  .auth-intro p{ font-size:15px; line-height:1.7; margin:0; opacity:.92; }
+  .auth-list{ list-style:none; padding:0; margin:24px 0 0; display:grid; gap:10px; }
+  .auth-list li{ display:flex; align-items:center; gap:10px; background:#ffffff; padding:10px 12px; border-radius:10px; font-size:13px; }
+  .auth-list li::before{ content:'✓'; font-weight:700; color:#2f89c7; }
+  .auth-form{ padding:36px 34px; display:flex; flex-direction:column; justify-content:center; background:#fcfdff; }
+  .auth-form h2{ font-family:'Source Serif 4', serif; font-size:24px; margin:8px 0 6px; color:#12304f; }
+  .auth-form .sub{ color:#51657d; font-size:13px; margin:0 0 20px; }
+  .auth-field{ display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
+  .auth-field label{ font-size:12.5px; font-weight:600; color:#7d8fa2; text-transform:uppercase; letter-spacing:.08em; }
+  .auth-field input{ background:#f9fcff; border:1px solid #dce8f0; border-radius:12px; padding:13px 14px; font-size:14px; color:#12304f; outline:none; transition:border-color .2s ease, box-shadow .2s ease; caret-color:#4e7fa8; -webkit-text-security:disc; text-security:disc; }
+  .auth-field input::placeholder{ color:transparent; }
+  .auth-field input:focus{ border-color:#4e7fa8; box-shadow:0 0 0 4px rgba(78,127,168,.12); }
+  .auth-btn{ width:100%; padding:13px 16px; border-radius:12px; margin-top:6px; }
+  .auth-error{ min-height:18px; margin-top:10px; color:#ef5d5d; font-size:12.5px; font-weight:600; }
+  .letterhead{ margin-top:24px; border-radius:20px; padding:38px 34px 32px; background:linear-gradient(135deg, #ffffff 0%, #f7fbff 100%); border:1px solid #e2ebf3; box-shadow:0 12px 28px rgba(18,48,79,.06); }
+  .ticket{ box-shadow:0 8px 18px -16px rgba(18,48,79,.12); }
+  .board{ background:#ffffff; border:1px solid #e2ebf3; border-radius:18px; padding:24px 24px 8px; box-shadow:0 10px 24px -20px rgba(18,48,79,.1); }
+  .q-card{ box-shadow:0 16px 36px -24px rgba(18,48,79,.16); }
+  .result-hero{ box-shadow:0 18px 40px -24px rgba(18,48,79,.16); }
+  @media (max-width:780px){ .auth-card{ grid-template-columns:1fr; } .auth-intro{ padding:28px 24px; border-right:none; border-bottom:1px solid #e7eef5; } .auth-form{ padding:24px 22px 28px; } .wrap{ padding:0 14px 70px; } .letterhead{ padding:28px 20px 24px; } .tabs{ flex-wrap:wrap; border-radius:20px; } .tab{ flex:1 1 calc(50% - 8px); text-align:center; } .ticket{ grid-template-columns:1fr; gap:10px; } .ticket-num{ border-right:none; border-bottom:1px dashed #dce8f0; padding-right:0; padding-bottom:8px; } .ticket-side{ align-items:flex-start; } .support-grid{ grid-template-columns:1fr; } }
+
+  /* ============ QUIZ SCREEN ============ */
+  .quiz-shell{ padding-top:36px; }
+  .quiz-topbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:26px; }
+  .back-btn{
+    font-family:'IBM Plex Mono', monospace; font-size:12px; font-weight:600; color:var(--ink-soft);
+    background:none; border:none; cursor:pointer; padding:0; letter-spacing:.03em;
+  }
+  .back-btn:hover{ color:var(--ink); }
+
+  .clock{
+    display:flex; align-items:center; gap:8px; font-family:'IBM Plex Mono', monospace;
+    border:1.5px solid var(--ink); border-radius:8px; padding:7px 12px;
+  }
+  .clock-dot{ width:7px; height:7px; border-radius:50%; background:var(--good); }
+  .clock-dot.warn{ background:var(--bad); animation:blink 1s step-start infinite; }
+  @keyframes blink{ 50%{ opacity:.25; } }
+  .clock-num{ font-weight:600; font-size:15px; color:var(--ink); min-width:26px; text-align:center; }
+
+  .quiz-title-row{ margin-bottom:6px; }
+  .quiz-title-row h2{ font-family:'Source Serif 4', serif; font-size:22px; font-weight:600; margin:0 0 4px; }
+  .quiz-title-row p{ font-size:13px; color:var(--ink-soft); margin:0; }
+
+  .note-box{
+    background:var(--seal-soft); border:1px solid #e8d8b6; color:#7a5b1f; font-size:12.5px; padding:12px 16px;
+    border-radius:var(--radius-sm); margin:16px 0; line-height:1.55;
+  }
+
+  .progress-track{ height:3px; background:var(--line); border-radius:99px; margin-top:20px; overflow:hidden; }
+  .progress-fill{ height:100%; width:0%; background:var(--accent-deep); transition:width .3s ease; }
+  .progress-info{ display:flex; justify-content:space-between; font-size:11.5px; color:var(--ink-faint); font-family:'IBM Plex Mono', monospace; margin:8px 0 26px; }
+
+  .q-card{
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:var(--radius);
+    padding:30px 28px; margin-bottom:20px;
+  }
+  .q-num-chip{
+    display:inline-block; font-family:'IBM Plex Mono', monospace; font-size:11px; font-weight:600;
+    color:var(--accent-deep); background:var(--accent-soft); padding:4px 11px; border-radius:999px; margin-bottom:16px;
+    letter-spacing:.03em;
+  }
+  .q-text{ font-family:'Source Serif 4', serif; font-size:19px; font-weight:600; line-height:1.5; margin:0 0 26px; color:var(--ink); }
+
+  .options{ display:grid; gap:10px; }
+  .opt{
+    display:flex; align-items:center; gap:14px; text-align:left;
+    background:var(--paper); border:1.5px solid var(--line); border-radius:8px; padding:14px 16px;
+    cursor:pointer; font-size:14.5px; font-weight:500; color:var(--ink); transition:.15s ease;
+  }
+  .opt:hover{ border-color:var(--accent); background:var(--accent-soft); }
+  .opt .lab{
+    width:26px; height:26px; border-radius:6px; border:1.5px solid var(--line-strong); color:var(--ink-soft);
+    display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace;
+    font-weight:600; font-size:12px; flex-shrink:0; background:var(--paper-raised);
+  }
+  .opt.selected{ border-color:var(--accent-deep); background:var(--accent-soft); }
+  .opt.correct{ border-color:var(--good); background:var(--good-soft); }
+  .opt.correct .lab{ background:var(--good); color:#fff; border-color:var(--good); }
+  .opt.wrong{ border-color:var(--bad); background:var(--bad-soft); }
+  .opt.wrong .lab{ background:var(--bad); color:#fff; border-color:var(--bad); }
+  .opt.disabled{ cursor:default; }
+  .opt.dim{ opacity:.5; }
+
+  .nav-row{ display:flex; justify-content:space-between; align-items:center; gap:12px; }
+  .btn{
+    font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:13.5px; border:none; cursor:pointer;
+    padding:12px 22px; border-radius:8px; transition:.2s ease;
+  }
+  .btn-primary{ background:linear-gradient(135deg, var(--ink), var(--accent-deep)); color:#fff; box-shadow:0 12px 24px -14px rgba(23,32,51,.45); }
+  .btn-primary:hover{ transform:translateY(-1px); box-shadow:0 14px 28px -14px rgba(23,32,51,.5); }
+  .btn-primary:disabled{ opacity:.35; cursor:not-allowed; }
+  .btn-ghost{ background:transparent; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace; font-size:12.5px; }
+  .btn-ghost:hover{ color:var(--ink); }
+
+  .feedback-line{ min-height:18px; font-size:12.5px; font-weight:600; margin-top:14px; font-family:'IBM Plex Mono', monospace; }
+  .feedback-line.good{ color:var(--good); }
+  .feedback-line.bad{ color:var(--bad); }
+
+  /* ============ RESULTS ============ */
+  .result-hero{
+    background:var(--paper-raised); border:1.5px solid var(--ink); border-radius:var(--radius);
+    padding:44px 32px; text-align:center; margin-bottom:30px; position:relative;
+  }
+  .result-seal{
+    width:110px; height:110px; margin:0 auto 20px; border-radius:50%; border:3px solid var(--ink);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; position:relative;
+  }
+  .result-seal::before{
+    content:""; position:absolute; inset:6px; border-radius:50%; border:1px dashed var(--line-strong);
+  }
+  .result-seal .big{ font-family:'Source Serif 4', serif; font-size:30px; font-weight:700; }
+  .result-seal .small{ font-size:10px; font-family:'IBM Plex Mono', monospace; color:var(--ink-faint); }
+  .result-hero h2{ font-family:'Source Serif 4', serif; margin:6px 0 4px; font-size:22px; }
+  .result-hero p{ margin:0; color:var(--ink-soft); font-size:13.5px; }
+  .result-actions{ display:flex; gap:12px; justify-content:center; margin-top:24px; flex-wrap:wrap; }
+
+  .review-title{ font-family:'Source Serif 4', serif; font-size:16px; margin:30px 0 14px; }
+  .review-item{
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:8px; padding:15px 18px; margin-bottom:9px;
+  }
+  .review-item .rq{ font-weight:600; font-size:13.5px; margin-bottom:8px; display:flex; gap:10px; }
+  .review-item .rq .tag{
+    flex-shrink:0; width:20px; height:20px; border-radius:5px; display:flex; align-items:center; justify-content:center;
+    font-size:11px; color:#fff; font-weight:700; margin-top:1px;
+  }
+  .review-item .rq .tag.ok{ background:var(--good); }
+  .review-item .rq .tag.no{ background:var(--bad); }
+  .review-item .ans-line{ font-size:12.5px; color:var(--ink-soft); padding-left:30px; }
+  .review-item .ans-line b{ color:var(--ink); font-weight:600; }
+  .review-item .ans-line.wrongline{ color:var(--bad); }
+  .review-item .ans-line.goodline{ color:var(--good); }
+
+  @media (max-width:560px){
+    .q-card{ padding:22px 18px; }
+    .letterhead{ padding-top:34px; }
+    .stat-row{ gap:26px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- ============ AUTH SCREEN ============ -->
+  <section id="auth-screen" class="auth-screen">
+    <div class="auth-card">
+      <div class="auth-intro">
+        <div class="auth-badge">ATT2026</div>
+        <h1>Attestatsiya test platformasi</h1>
+        <p>Informatika fani o‘qituvchilari uchun zamonaviy va qulay mock-test muhiti. Kirishdan so‘ng barcha testlar, natijalar va tahlillar ochiladi.</p>
+        <ul class="auth-list">
+          <li>40 soniya / savol vaqt nazorati</li>
+          <li>Darhol natija va javoblar tahlili</li>
+          <li>Attestatsiya va mavzuviy testlar</li>
+        </ul>
+      </div>
+      <div class="auth-form">
+        <p class="eyebrow">Kirish</p>
+        <h2>Hisobga kirish</h2>
+        <p class="sub">Platformaga kirish uchun login va parolni kiriting.</p>
+        <div class="auth-field">
+          <label for="login-input">Login</label>
+          <input id="login-input" type="password" inputmode="text" autocomplete="new-password" spellcheck="false" placeholder="">
+        </div>
+        <div class="auth-field">
+          <label for="password-input">Parol</label>
+          <input id="password-input" type="password" inputmode="text" autocomplete="new-password" spellcheck="false" placeholder="">
+        </div>
+        <button class="btn btn-primary auth-btn" onclick="handleLogin()">Kirish</button>
+        <p class="auth-error" id="auth-error"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ HOME SCREEN ============ -->
+  <section id="home-screen" class="hidden">
+
+    <header class="letterhead">
+      <div class="lh-top">
+        <div class="crest">A·26</div>
+        <div class="lh-meta">INFORMATIKA FANI<br>TEST MARKAZI</div>
+      </div>
+      <p class="eyebrow">Malaka oshirish attestatsiyasiga tayyorgarlik</p>
+      <h1 class="hero">Attestatsiya <em>2026</em></h1>
+      <p class="lede">Informatika fani o'qituvchilari uchun attestatsiya formatidagi mock testlar va mavzuviy tayyorgarlik savollari. Variantni tanlang, vaqt nazorati ostida javob bering.</p>
+      <div class="stat-row">
+        <div class="stat"><span class="num" id="stat-total-tests">14</span><span class="lbl">jami test</span></div>
+        <div class="stat"><span class="num" id="stat-total-q">511</span><span class="lbl">jami savol</span></div>
+        <div class="stat"><span class="num" id="stat-best">—</span><span class="lbl">eng yaxshi natija</span></div>
+      </div>
+      <div class="hero-pills">
+        <span class="hero-pill">Real test formatida</span>
+        <span class="hero-pill">40 soniya / savol</span>
+        <span class="hero-pill">Darhol natija</span>
+      </div>
+    </header>
+
+    <nav class="tabs" id="cat-tabs">
+      <button class="tab active" data-cat="all">Barchasi</button>
+      <button class="tab" data-cat="attestatsiya">Attestatsiya mock testlari</button>
+      <button class="tab" data-cat="mavzuviy">Mavzuviy testlar</button>
+    </nav>
+
+    <section class="section" id="section-attestatsiya">
+      <div class="section-head">
+        <div>
+          <div class="section-num">I BO'LIM</div>
+          <h2 class="section-title">Attestatsiya mock testlari</h2>
+        </div>
+      </div>
+      <p class="section-desc">Haqiqiy attestatsiya sinovi formatida tuzilgan 10 ta variant — dasturlash, algoritmlar, ofis dasturlari, tarmoq texnologiyalari va pedagogika bo'yicha savollar.</p>
+      <div class="tickets" id="grid-attestatsiya"></div>
+    </section>
+
+    <section class="section" id="section-mavzuviy">
+      <div class="section-head">
+        <div>
+          <div class="section-num">II BO'LIM</div>
+          <h2 class="section-title">Mavzuviy testlar</h2>
+        </div>
+      </div>
+      <p class="section-desc">Aniq mavzular bo'yicha chuqurlashtirilgan mashq testlari — axborot xavfsizligi, shifrlash usullari va informatika asoslari.</p>
+      <div class="tickets" id="grid-mavzuviy"></div>
+    </section>
+
+    <section class="board">
+      <div class="board-header">
+        <div>
+          <h3 class="board-title">📌 E'lonlar taxtasi</h3>
+          <p class="board-sub">Kurslar va qo'shimcha platformalar</p>
+        </div>
+        <div class="support-chip">Murojaat uchun</div>
+      </div>
+      <div class="board-list">
+        <div class="board-item">
+          <div class="board-tag">YANGI PLATFORMA</div>
+          <div>
+            <h4>Kasbiy sertifikat va Attestatsiya TEST platformalari</h4>
+            <p>10 ta mock test (350 savol) va 15 ta sifatli attestatsiya testi — haqiqiy imtihon formatida. Narxi: 100 000 so'm/platforma.</p>
+          </div>
+        </div>
+        <div class="board-item">
+          <div class="board-tag">KUZGI KURS</div>
+          <div>
+            <h4>Kuzgi attestatsiyaga tayyorgarlik kursi</h4>
+            <p>Haftada 3 kun, 19:00–22:00. Nazariya, testlar va tahlil. Har yakshanba reyting MOCK TEST — g'oliblarga 100%/50%/30% chegirma. Narxi: 100 000 so'm/oy.</p>
+          </div>
+        </div>
+        <div class="board-item">
+          <div class="board-tag">IC3 GS6</div>
+          <div>
+            <h4>IC3 GS6 xalqaro sertifikat kurslari</h4>
+            <p>Ingliz yoki rus tilida, Level 1–3. 50% ustama beruvchi xalqaro sertifikat. Narxi: 500 000 so'm/level.</p>
+          </div>
+        </div>
+      </div>
+      <div class="support-grid">
+        <a class="support-card" href="https://t.me/IC3_masterUz" target="_blank" rel="noopener">
+          <div class="support-icon">🥏</div>
+          <div class="support-title">Admin</div>
+          <div class="support-text"><strong>@IC3_masterUz</strong><br>Testlar, kurslar va maslahatlar uchun.</div>
+        </a>
+        <a class="support-card" href="https://t.me/digital_ustoz_ic3_bot" target="_blank" rel="noopener">
+          <div class="support-icon">🤖</div>
+          <div class="support-title">Bot</div>
+          <div class="support-text"><strong>@digital_ustoz_ic3_bot</strong><br>Tezkor yo‘naltirish va savollar uchun.</div>
+        </a>
+        <a class="support-card" href="https://t.me/Informatika_ic3_ser" target="_blank" rel="noopener">
+          <div class="support-icon">✈️</div>
+          <div class="support-title">Kanal</div>
+          <div class="support-text"><strong>Digital Ustoz Informatika</strong><br>Yangiliklar, kurslar va yangilanishlar.</div>
+        </a>
+      </div>
+    </section>
+
+    <footer class="foot">HAR BIR SAVOLGA 40 SONIYA · NATIJALAR SHU QURILMADA SAQLANADI</footer>
+  </section>
+
+  <!-- ============ QUIZ SCREEN ============ -->
+  <section id="quiz-screen" class="hidden quiz-shell">
+    <div class="quiz-topbar">
+      <button class="back-btn" onclick="goHome()">← Testlarga qaytish</button>
+      <div class="clock" id="clock-box">
+        <span class="clock-dot" id="clock-dot"></span>
+        <span class="clock-num" id="timer-num">40</span>
+      </div>
+    </div>
+
+    <div class="quiz-title-row">
+      <h2 id="quiz-title-active"></h2>
+      <p id="quiz-desc-active"></p>
+    </div>
+
+    <div id="quiz-note" class="note-box hidden"></div>
+
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <div class="progress-info">
+      <span id="progress-label">Savol 1</span>
+      <span id="score-label">Ball: 0</span>
+    </div>
+
+    <div class="q-card">
+      <span class="q-num-chip" id="q-chip">1-savol</span>
+      <p class="q-text" id="q-text"></p>
+      <div class="options" id="options"></div>
+      <div class="feedback-line" id="feedback"></div>
+    </div>
+
+    <div class="nav-row">
+      <button class="btn btn-ghost" onclick="skipQuestion()">O'tkazib yuborish →</button>
+      <button class="btn btn-primary" id="next-btn" disabled onclick="nextQuestion()">Keyingisi →</button>
+    </div>
+  </section>
+
+  <!-- ============ RESULT SCREEN ============ -->
+  <section id="result-screen" class="hidden">
+    <div class="result-hero">
+      <div class="result-seal">
+        <div class="big" id="result-score">0</div>
+        <div class="small" id="result-total">/ 0 TO'G'RI</div>
+      </div>
+      <h2 id="result-title">Natija tayyor!</h2>
+      <p id="result-msg">Quyida batafsil tahlilni ko'rishingiz mumkin.</p>
+      <div class="result-actions">
+        <button class="btn btn-primary" onclick="retryQuiz()">↻ Qayta urinish</button>
+        <button class="btn btn-ghost" onclick="goHome()">← Testlar ro'yxatiga</button>
+      </div>
+    </div>
+
+    <h3 class="review-title">Javoblar tahlili</h3>
+    <div id="review-list"></div>
+  </section>
+
+</div>
+<script>
+/* =========================================================
+   QUIZ DATA (loaded from embedded JSON below)
+   ========================================================= */
+const QUIZZES = [{"id": "informatika-axborot", "title": "1-test: Informatika va axborot", "desc": "20 ta savol · guruh testi natijalari asosida", "icon": "🧠", "cls": "c1", "cat": "mavzuviy", "note": null, "questions": [{"q": "\"Informatika\" atamasi dastlab qaysi ikki so'zning birlashmasidan kelib chiqqan?", "options": ["Information va avtomatika", "Information va matematika", "Informatsiya va texnika", "Axborot va texnologiya"], "correct": 0}, {"q": "Informatika xonasida ko'z va monitor ekrani orasidagi eng kam xavfsiz masofa qancha bo'lishi kerak?", "options": ["30-40 sm", "50-60 sm", "15-20 sm", "80-100 sm"], "correct": 1}, {"q": "Axborotning voqelikka to'liq mos kelishi va unda xatolarning yo'qligi uning qaysi xossasi hisoblanadi?", "options": ["Dolzarblik", "Ishonchlilik", "Tushunarlilik", "To'liqlik"], "correct": 1}, {"q": "Axborotni to'plash, saqlash, uzatish va qayta ishlash amallari umumiy holda nima deb ataladi?", "options": ["Raqamli jarayonlar", "Axborotli jarayonlar", "Bulutli xizmatlar", "Dasturiy ta'minot"], "correct": 1}, {"q": "Bulutli texnologiyalardagi SaaS modelining to'liq ma'nosi nima?", "options": ["Infratuzilma xizmat sifatida", "Platforma xizmat sifatida", "Dasturiy ta'minot xizmat sifatida", "Apparat vositasi xizmat sifatida"], "correct": 2}, {"q": "Sanitariya-gigiena talablariga ko'ra o'quvchi uchun kunlik kompyuterdan foydalanish davomiyligi qancha va har necha daqiqada ko'zlarni dam oldirish kerak?", "options": ["2-3 soat, har 40 daqiqada", "1 soat, har 10 daqiqada", "2-3 soat, har 20 daqiqada", "4-5 soat, har 45 daqiqada"], "correct": 2}, {"q": "Informatika xonasida dars vaqtida qurilmadan tutun yoki g'ayritabiiy hid kelsa, birinchi navbatda nima qilish kerak?", "options": ["Oynani ochib shamollatish", "O'qituvchiga xabar berish", "Suv sepib o'chirishga harakat qilish", "Hech narsa qilmaslik"], "correct": 1}, {"q": "Inson atrof-muhitdan kelayotgan axborotning eng katta qismini (taxminan 80-90%) qaysi sezgi a'zosi orqali qabul qiladi?", "options": ["Eshitish", "Hid bilish", "Ko'rish", "Ta'm bilish"], "correct": 2}, {"q": "Kitob o'qish, musiqa tinglash va kino ko'rish jarayonlarida mos ravishda axborotning qaysi shakllaridan foydalaniladi?", "options": ["Matnli, audio, video", "Grafik, sonli, matnli", "Audio, video, hid bilish", "Matnli, audio, grafik"], "correct": 0}, {"q": "Monitordan ko'zgacha bo'lgan masofa qancha bo'lishi talab etiladi?", "options": ["20-30 sm", "30-40 sm", "40-50 sm", "50-60 sm"], "correct": 3}, {"q": "Ko'z charchashining oldini olish uchun kompyuterda ishlaganda qanday tanaffus qoidalariga amal qilish tavsiya etiladi?", "options": ["Tanaffussiz ishlash kerak", "Har 20-30 daqiqada uzoqqa qarab ko'z mashqlarini bajarish kerak", "Tanaffus vaqtida ozgina telefondan foydalanish kerak", "Faqat dars tugaganda tanaffus qilish kerak"], "correct": 1}, {"q": "Qo'llarni ish stoliga qo'yganda tirsaklar qanday burchak hosil qilishi maqsadga muvofiq?", "options": ["45-60 gradus", "60-90 gradus", "90-120 gradus", "120-150 gradus"], "correct": 2}, {"q": "Tabiatdagi va jamiyatdagi axborot tushunchasiga nimalar kiradi?", "options": ["Faqat kompyuterda saqlanadigan ma'lumotlar", "Faqat insonlar yaratgan kitoblar", "Atrof-muhitdagi ob'ektlar, hodisalar va jarayonlar haqidagi har qanday ma'lumotlar va signallar", "Faqat raqamli axborotlar"], "correct": 2}, {"q": "Bulutli texnologiyalarining IaaS (Infratuzilma xizmat sifatida) modelining asosiy afzalligi nima?", "options": ["Foydalanuvchi server va tarmoq resurslarini jismonan sotib olmay, masofadan ijaraga oladi", "Faqat dasturlardan bepul foydalanish imkonini beradi", "Internet orqali operatsion tizimsiz kompyuter sotib olish", "Har qanday ma'lumotni disketada saqlash"], "correct": 0}, {"q": "Axborotni uzatish jarayonini muvaffaqiyatli amalga oshirish uchun manba va qabul qiluvchi o'rtasida nima bo'lishi shart?", "options": ["Aloqa kanali (vositasi)", "Matnli fayl", "Proyektor", "Printer"], "correct": 0}, {"q": "Bulutli texnologiyalar modellari va atamalariga mos ta'riflarni toping:", "options": ["1-A; 2-C; 3-D; 4-B", "1-B; 2-A; 3-C; 4-D", "1-C; 2-D; 3-B; 4-A", "1-D; 2-C; 3-B; 4-A"], "correct": 1}, {"q": "Axborot xossalariga mos ta'riflarni toping:", "options": ["1-B, 2-A, 3-D, 4-C", "1-A, 2-B, 3-C, 4-D", "1-C, 2-B, 3-D, 4-A", "1-B, 2-A, 3-C, 4-D"], "correct": 1}, {"q": "Informatika va signallar tushunchalariga mos ta'riflarni toping:", "options": ["1-C, 2-B, 3-D, 4-A", "1-A, 2-B, 3-C, 4-D", "1-B, 2-A, 3-C, 4-D", "1-D, 2-C, 3-A, 4-B"], "correct": 0}, {"q": "Noutbukda ishlaganda bosh holati qanday bo'lishi lozim?", "options": ["Boshni biroz yuqoriga ko'tarib o'tirish lozim", "Boshni o'ngga yoki chapga burib o'tirish lozim", "Boshni biroz pastga egib o'tirish lozim", "Bosh holatining ahamiyati yo'q"], "correct": 2}, {"q": "Tanaffus paytida qanday badan gimnastikasi mashqini bajarish tavsiya etilgan?", "options": ["O'rindiqda qimirlamay o'tirish", "Xonada qo'llarni baland ko'targan holda 2-3 daqiqa yurish", "Zalda ozgina yugurish (boshqalarga halaqit bermagan holda)", "Ko'zni yumib uxlash"], "correct": 1}]}, {"id": "kuzgi-attestatsiya", "title": "Kuzgi attestatsiya (namuna)", "desc": "35 savollik yopiq guruh testidan 1-11 savollar namunasi", "icon": "🗂️", "cls": "c2", "cat": "mavzuviy", "note": "Bu test asli 35 ta savoldan iborat yopiq guruh attestatsiyasi edi. Yuklangan suhbat tarixida faqat dastlabki 11 ta savolning natijalari ko'rinib turibdi, shu sababli platformada o'sha 11 ta savol jamlandi.", "questions": [{"q": "1 MB necha baytga teng?", "options": ["1024 bayt", "1 048 576 bayt", "1042 bayt", "1 048 567 bayt"], "correct": 1}, {"q": "Axborotning kompyuterda qayta ishlanadigan shakli qanday ataladi?", "options": ["Analog axborot", "Raqamli axborot", "Uzluksiz axborot", "Matnli axborot"], "correct": 1}, {"q": "32 bit necha baytni tashkil qiladi?", "options": ["2 bayt", "4 bayt", "8 bayt", "16 bayt"], "correct": 1}, {"q": "Eng kichik axborot o'lchov birligi nima?", "options": ["Bayt", "Bod", "Bit", "Gerts"], "correct": 2}, {"q": "ASCII kodlash jadvalida '0' (nol) belgisining o'nlik kodi nechaga teng?", "options": ["0", "32", "48", "65"], "correct": 0}, {"q": "Shifrlash jarayonining asosiy maqsadi nima?", "options": ["Fayl hajmini kichraytirish", "Axborot maxfiyligini ta'minlash", "Ma'lumotlarni tez uzatish", "Xatolarni to'g'rilash"], "correct": 1}, {"q": "Simmetrik shifrlashning asimmetrik shifrlashdan asosiy farqi nimada?", "options": ["Shifrlash va deshifrlash uchun turli kalitlar ishlatiladi", "Shifrlash va deshifrlash uchun bitta kalitdan foydalaniladi", "Faqat raqamli axborotni shifrlaydi", "Kalit umuman ishlatilmaydi"], "correct": 0}, {"q": "Ochiq matnni yopiq ko'rinishga keltirish jarayoni nima deb ataladi?", "options": ["Deshifrlash", "Kriptoanaliz", "Shifrlash", "Arxivlash"], "correct": 2}, {"q": "Sezar usulida alifbo harflari qanday prinsip asosida shifrlanadi?", "options": ["Belgilar o'rni tasodifiy almashtiriladi", "Belgilar o'rni ma'lum qadamga suriladi (siljiydi)", "Harflar raqamlarga almashtiriladi", "Maxsus jadval yordamida o'rinlari almashadi"], "correct": 1}, {"q": "Agar 'MAKTAB' so'zi Sezar shifri (k=3) yordamida o'ngga surilsa, qanday shifrmatn hosil bo'ladi (Lotin alifbosi tartibida)?", "options": ["PDNWDE", "OCMVCD", "QEOXEF", "LZXSZA"], "correct": 0}, {"q": "Vijener usulining Sezar usulidan ustunligi nimada?", "options": ["Kalitsiz ochish juda oson", "Faqat bitta alifbodan foydalanadi", "Polialfavitli bo'lib, kalit so'z uzunligiga qarab harflar turlicha suriladi", "Kompyuterda qo'llash imkonsiz"], "correct": 2}]}, {"id": "vigenere", "title": "Vijener (Vigenère) usuliga oid testlar", "desc": "10 ta savol · nazariy va amaliy misollar", "icon": "🔐", "cls": "c3", "cat": "mavzuviy", "note": "Amaliy savollarda A=0, B=1, C=2 ... Z=25 tartibida hisoblangan (ingliz alifbosi).", "questions": [{"q": "Simmetrik va asimmetrik shifrlashning eng asosiy farqi nimada?", "options": ["Simmetrik shifrlashda 1 ta (umumiy), asimmetrikda esa 2 ta (ochiq va yopiq) kalit ishlatiladi", "Asimmetrik shifrlash faqat matnlarni shifrlaydi, simmetrik esa rasmlarni", "Simmetrik shifrlash internet tarmoqlarida umuman ishlamaydi", "Ikkalasi bir xil, faqat nomlanishida farq bor"], "correct": 0}, {"q": "Asimmetrik shifrlashda Bob Elisga yashirin xabar yubormoqchi bo'lsa, u xabarni qaysi kalit bilan shifrlashi kerak bo'ladi?", "options": ["Bobning ochiq kaliti bilan", "Elisning yopiq (maxfiy) kaliti bilan", "Elisning ochiq kaliti bilan", "Bobning yopiq kaliti bilan"], "correct": 2}, {"q": "Quyidagi algoritmlardan qaysilari simmetrik shifrlash standartlariga misol bo'la oladi?", "options": ["RSA va ECC", "AES va DES", "Diffie-Hellman va RSA", "SHA-256 va MD5"], "correct": 1}, {"q": "Asimmetrik shifrlashda kiberxavfsizlik qoidalariga ko'ra qaysi kalit har doim qat'iy sir saqlanishi shart?", "options": ["Ochiq kalit (Public key)", "Yopiq kalit (Private key)", "Ikkala kalit ham sir saqlanishi shart", "Hech biri, ular ochiq tarqatiladi"], "correct": 1}, {"q": "Nima uchun amaliyotda ko'pincha gibrid (simmetrik va asimmetrik birgalikda) shifrlash tizimlari ishlatiladi?", "options": ["Asimmetrik shifrlash tez ishlaydi, simmetrik esa juda sekin", "Simmetrik kalitni xavfsiz almashish uchun asimmetrikdan, katta ma'lumotlarni tez shifrlash uchun esa simmetrikdan foydalaniladi", "Bitta turdagi shifrlashni buzish juda oson bo'lgani uchun", "Asimmetrik shifrlash kalitlarini eslab qolish inson xotirasi uchun qulay bo'lgani uchun"], "correct": 1}, {"q": "Ochiq matn \"DARS\", kalit so'z \"ABC\" bo'lsa, Vijener usuli yordamida shifrlangan matnni toping.", "options": ["ECTV", "DBTS", "EBUT", "DART"], "correct": 1}, {"q": "Agar shifrlangan matn \"IFMMP\" bo'lsa va Vijener kaliti \"B\" harfi bo'lsa (faqat bitta \"B\" harfi takrorlanadi, ya'ni surilish = 1), dastlabki ochiq matn qanday bo'lgan?", "options": ["HELLO", "WORLD", "APPLE", "DANCE"], "correct": 0}, {"q": "\"KOSMOS\" ochiq matnini Vijener jadvali yordamida \"A\" kaliti bilan shifrlasak, natija qanday bo'ladi (A harfi alifboda 0-siljishni bildiradi)?", "options": ["LPTNPT", "JNRMNR", "KOSMOS", "MQUOQU"], "correct": 2}, {"q": "Vijener usulida kalit so'z ochiq matndan qisqa bo'lsa, shifrlash jarayoni qanday amalga oshiriladi? Misol uchun: ochiq matn \"KIBERXAVF\", kalit \"KALIT\".", "options": ["Kalit so'z ochiq matn oxiriga yetgunicha takrorlanadi (KALITKALI...)", "Kalit yetmay qolgan harflar umuman shifrlanmaydi", "Ochiq matnning ortiqcha qismi qirqib tashlanadi", "Kalit oxiriga tasodifiy raqamlar qo'shiladi"], "correct": 0}, {"q": "Ochiq matn \"A\" harfi bo'lib, kalit so'z \"Z\" bo'lsa, Vijener usulida shifrlangan matn qaysi harfni beradi?", "options": ["A", "Z", "Y", "B"], "correct": 1}]}, {"id": "kodlash", "title": "Kodlash mavzusiga oid testlar", "desc": "10 ta savol · Sezar shifri, kodlash va shifr jumboqlari", "icon": "🧩", "cls": "c4", "cat": "mavzuviy", "note": "Ba'zi savollarda (1, 7, 10) manba faylda aniq javob kaliti berilmagan — hisoblash orqali eng mos javob belgilandi.", "questions": [{"q": "\"olimpiada\" so'zi o'rin almashtirish usulida shifrlangan bo'lsa, shifrlangan matnni aniqlang.", "options": ["Olimpiada", "Omalpdiia", "Aoloimpiad", "Piolamida"], "correct": 1}, {"q": "\"compyuter\" so'zi Sezar shifrida shifrlangan. Alifbo (a,b,c,...,z), kalit k=4. Shifrlangan so'zni toping.", "options": ["Gsqtyxiv", "Gsqtwxiw", "Gsqtxiwv", "Gsqtxiwz"], "correct": 0}, {"q": "Sezar usulida shifrlangan \"FLCPIQ\" berilgan. Agar kalit k=2 bo'lsa, shifrni oching (decoding).", "options": ["HNERKS", "QIPCLF", "DJANGO", "PYTHON"], "correct": 2}, {"q": "Sezar shifrlash usulida alifbo harflari o'ng tomonga 3 pozitsiyaga suriladi. Agar shifrlangan so'z \"ELO\" bo'lsa, asl so'z qanday bo'lgan?", "options": ["HOR", "HIP", "OLE", "BIL"], "correct": 3}, {"q": "Agar \"OLMA\" so'zi \"15121301\" kabi kodlangan bo'lsa va \"ANOR\" so'zi \"01141518\" kabi kodlangan bo'lsa, \"MAKTAB\" so'zi ushbu sistemada qanday kodlanadi?", "options": ["011415180102", "130111200102", "151213130102", "130114150102"], "correct": 1}, {"q": "Ma'lum bir kodlash usulida \"rejection\" so'zi \"sgmihzpww\" ko'rinishida kodlangan bo'lsa, shu kodlash usulida \"mechanic\" so'zi qanday ko'rinishda bo'ladi?", "options": ["phfkdqlf", "jbzexkfz", "ngflftpk", "mhieaccn"], "correct": 2}, {"q": "Harflar alifbodagi o'rniga mos ravishda (harflarning o'rni 1 dan boshlanadi) shuncha qadam o'ngga suriladi. Dastlabki so'zning barcha harflari alifboning dastlabki 13 ta harfi orasida joylashgan. Shifrlangandan keyin bo'lgan so'z \"HRZ\" bo'lsa, dastlabki so'zni aniqlang.", "options": ["MID", "PJZ", "EHM", "DIM"], "correct": 3}, {"q": "Harflar alifbodagi o'rniga mos ravishda (harflarning o'rni 1 dan boshlanadi) shuncha qadam o'ngga suriladi. Dastlabki so'zning barcha harflari alifboning dastlabki 13 ta harfi orasida joylashgan. Shifrlangandan keyin bo'lgan so'z \"BDF\" bo'lsa, dastlabki so'zni aniqlang.", "options": ["ABC", "ACE", "BCD", "ABD"], "correct": 0}, {"q": "Ma'lum bir so'z quyidagi qoida asosida shifrlangan: harflar alifbodagi o'rniga mos ravishda shuncha qadam o'ngga suriladi. Agar dastlabki so'z \"BEG\" bo'lsa, shifrlangandan keyin qanday so'z hosil bo'ladi? (Alifbo: A=1, B=2, ...)", "options": ["CHK", "DIN", "DJN", "EIL"], "correct": 2}, {"q": "Rasmda ko'rsatilgan panjara/teshiklar usulida matn yozib, so'ng panjarani aylantirib qolgan bo'sh joylarga davom ettirib yoziladigan klassik shifrlash usuli qanday nomlanadi?", "options": ["Kardano trafareti", "mxivejex srehveo", "oevhers xvejevixm", "Ma'lumot to'liq emas, kodlab bo'lmaydi"], "correct": 0}]}, {"id": "sertifikat-1", "title": "Attestatsiya mock test — 1-variant", "desc": "JavaScript, Python, Scratch, Algoritmlar, HTML & CSS · 30 savol", "icon": "💻", "cls": "c1", "cat": "attestatsiya", "note": null, "questions": [{"q": "JavaScript'da 'let' va 'var' o'rtasidagi asosiy farq nima?", "options": ["Scope bir xil", "let block scope, var function scope", "var tezroq ishlaydi", "let faqat arraylarda ishlaydi"], "correct": 1}, {"q": "JavaScript'da closure nima?", "options": ["Global variable", "Function ichidagi function tashqi scope ga kira olishi", "Array method", "Event listener"], "correct": 1}, {"q": "Kod natijasini aniqlang: let a = 5; let b = \"5\"; console.log(a == b); console.log(a === b);", "options": ["true true", "true false", "false true", "false false"], "correct": 1}, {"q": "Python'da list comprehension nima uchun ishlatiladi?", "options": ["Funksiya yaratish", "Qisqa va samarali list yaratish", "Class yaratish", "Exception boshqarish"], "correct": 1}, {"q": "Python'da tuple va list o'rtasidagi asosiy farq?", "options": ["Tuple immutable", "Tuple faqat son saqlaydi", "List immutable", "Tuple tezroq ishlamaydi"], "correct": 0}, {"q": "Rasmga qarang. Python kod natijasi nima? numbers = [1,2,3,4]; print(numbers[-1])", "options": ["1", "4", "3", "Error"], "correct": 1}, {"q": "Python'da recursion nima?", "options": ["Loop turi", "Funksiyaning o'zini chaqirishi", "List operatori", "Dictionary usuli"], "correct": 1}, {"q": "Scratch dasturlash muhiti qaysi yoshdagi o'quvchilar uchun mo'ljallangan?", "options": ["Boshlang'ich dasturchilar", "Faqat professional developerlar", "Server administratorlar", "Database mutaxassislari"], "correct": 0}, {"q": "Scratch: when green flag clicked; set x to 0; repeat 5 { change x by 2 }; say x. Yakuniy x qiymati?", "options": ["5", "10", "8", "2"], "correct": 1}, {"q": "Scratch'da 'repeat until' blokining vazifasi?", "options": ["Cheksiz takrorlash", "Shart bajarilguncha takrorlash", "Faqat 1 marta bajarish", "Tasodifiy bajarish"], "correct": 1}, {"q": "Algoritm nima?", "options": ["Kompyuter qurilmasi", "Muammoni yechish bosqichlari ketma-ketligi", "Operatsion tizim", "Internet protokoli"], "correct": 1}, {"q": "Algoritmning asosiy xususiyatlari qaysilar?", "options": ["Aniqlik va tugallanish", "Faqat tezlik", "Faqat grafik ko'rinish", "Faqat matematik"], "correct": 0}, {"q": "Algoritm Flow: Start; Input N; If N % 2 == 0 -> Even, aks holda Odd. Rasmga qarab algoritm nima aniqlaydi?", "options": ["Son manfiyligini", "Son juft yoki toqligini", "Son katta yoki kichikligini", "Son tub ekanligini"], "correct": 1}, {"q": "Big-O notatsiyasi nimani bildiradi?", "options": ["Xotira hajmi", "Algoritm murakkabligi", "Disk hajmi", "Internet tezligi"], "correct": 1}, {"q": "Binary search qaysi sharoitda ishlaydi?", "options": ["Tartiblangan massivda", "Har qanday massivda", "Faqat stringda", "Faqat database da"], "correct": 0}, {"q": "HTML nima?", "options": ["Dasturlash tili", "Markup tili", "Operatsion tizim", "Server"], "correct": 1}, {"q": "HTML'da <div> tegi vazifasi?", "options": ["Matnni qalin qilish", "Blok konteyner", "Rasm qo'yish", "Script ishlatish"], "correct": 1}, {"q": "<html><body><div><p>Hello</p></div></body></html>. Rasmga qarab DOM daraxtidagi nechta element mavjud?", "options": ["3", "4", "5", "6"], "correct": 2}, {"q": "CSS'da 'flexbox' nima uchun ishlatiladi?", "options": ["Matn yozish", "Layout boshqarish", "Server sozlash", "Database ulash"], "correct": 1}, {"q": "CSS'da 'position: absolute' nimani bildiradi?", "options": ["Normal oqimda joylashish", "Elementni aniq koordinatada joylash", "Elementni yashirish", "Elementni o'chirish"], "correct": 1}, {"q": "JavaScript'da 'event bubbling' nima?", "options": ["Event yuqoriga tarqalishi", "Event pastga tushishi", "Event o'chishi", "Event faqat button uchun"], "correct": 0}, {"q": "JavaScript'da Promise nima?", "options": ["Asinxron operatsiyalarni boshqarish", "Array turi", "Loop turi", "Server"], "correct": 0}, {"q": "Python'da dictionary nima?", "options": ["Kalit-qiymat juftligi", "Faqat sonlar ro'yxati", "Matnlar ro'yxati", "Grafik"], "correct": 0}, {"q": "Python'da 'len()' funksiyasi nima qiladi?", "options": ["Matnni o'zgartiradi", "Uzunlikni hisoblaydi", "List yaratadi", "Stringni kesadi"], "correct": 1}, {"q": "Algoritmda 'iteration' nima?", "options": ["Takrorlash", "Tanlash", "Boshlash", "Tugatish"], "correct": 0}, {"q": "Algoritm diagrammasida romb belgisi nimani bildiradi?", "options": ["Boshlash", "Shart", "Jarayon", "Tugatish"], "correct": 1}, {"q": "HTML'da 'id' va 'class' farqi?", "options": ["Farqi yo'q", "id yagona, class ko'p bo'lishi mumkin", "class yagona", "id faqat CSS uchun"], "correct": 1}, {"q": "CSS'da 'margin' nima?", "options": ["Ichki bo'shliq", "Tashqi bo'shliq", "Matn o'lchami", "Rang"], "correct": 1}, {"q": "JavaScript'da 'NaN' nimani bildiradi?", "options": ["No action number", "Not a number", "New array number", "Negative number"], "correct": 1}, {"q": "Python'da 'for' sikli nima qiladi?", "options": ["Takroriy bajarish", "Shart tekshirish", "Funksiya yaratish", "Exception"], "correct": 0}]}, {"id": "sertifikat-2", "title": "Attestatsiya mock test — 2-variant", "desc": "JavaScript, Python, Scratch, Algoritm, Word, Excel, Tarmoq texnologiyalari · 30 savol", "icon": "🐍", "cls": "c2", "cat": "attestatsiya", "note": null, "questions": [{"q": "function test(a,b=4){ if(a>b){return a*b} else{return a+b} } console.log(test(3,5)); console.log(test(6)); Natijani aniqlang:", "options": ["20 va 10", "8 va 24", "15 va 24", "15 va 10"], "correct": 3}, {"q": "JavaScript'da 'async/await' nima uchun ishlatiladi?", "options": ["DOM yaratish", "Asinxron kodni boshqarish", "CSS yuklash", "Loop yaratish"], "correct": 1}, {"q": "JavaScript'da arrayni teskari tartibda chiqaruvchi metod qaysi?", "options": ["reverse()", "sort()", "slice()", "push()"], "correct": 0}, {"q": "data=[2,4,6,8]; s=0; for i in data: s+=i//2; print(s). Natijani aniqlang:", "options": ["10", "8", "12", "20"], "correct": 0}, {"q": "Python'da dictionary tuzilmasining asosiy xususiyati?", "options": ["Indeks orqali murojaat", "Kalit-qiymat juftligi", "Faqat sonlar", "Faqat matn"], "correct": 1}, {"q": "Python'da 'lambda' funksiyasi nima?", "options": ["Anonim funksiya", "Loop", "Class", "File"], "correct": 0}, {"q": "Scratch dasturlash muhitida sprite nima?", "options": ["Fon rasmi", "Harakatlanuvchi obyekt", "Server", "Kod fayli"], "correct": 1}, {"q": "Scratch'da 'broadcast message' bloki nima qiladi?", "options": ["Xabar yuboradi", "Sprite yashiradi", "Kod o'chiradi", "Fon o'zgartiradi"], "correct": 0}, {"q": "Flowchart: Start; Input N; If N%3==0 -> Yes: Print A, No: Print B. Quyidagi algoritm diagrammasi nimani aniqlaydi?", "options": ["3 ga bo'linishini", "Juft sonni", "Tub sonni", "Manfiy sonni"], "correct": 0}, {"q": "Algoritmning asosiy xususiyatlari qaysilar?", "options": ["Aniqlik va yakunlanish", "Faqat tezlik", "Faqat grafik", "Faqat kod"], "correct": 0}, {"q": "Big-O notatsiyasi nimani bildiradi?", "options": ["Algoritm murakkabligi", "Disk hajmi", "RAM", "Internet tezligi"], "correct": 0}, {"q": "MS Word'da matnni ustunlarga bo'lish uchun qaysi menyu ishlatiladi?", "options": ["Insert", "Layout", "Design", "Review"], "correct": 1}, {"q": "Word'da avtomatik mundarija yaratish qaysi funksiya orqali?", "options": ["References -> Table of Contents", "Insert -> Header", "Layout -> Break", "Review -> Track"], "correct": 0}, {"q": "Word'da 'Ctrl + Shift + >' tugmalari nima qiladi?", "options": ["Shriftni kattalashtiradi", "Matnni markazlaydi", "Matnni qalin qiladi", "Matnni kichraytiradi"], "correct": 0}, {"q": "Excel: A1=12, A2=18, A3=6. Formula: =SUM(A1:A3)/COUNT(A1:A3). Natijani aniqlang:", "options": ["10", "12", "14", "16"], "correct": 1}, {"q": "Excel'da 'VLOOKUP' funksiyasi nima uchun ishlatiladi?", "options": ["Qidiruv", "Diagramma", "Formatlash", "Print"], "correct": 0}, {"q": "Excel'da 'IF' funksiyasi nima qiladi?", "options": ["Matnni o'zgartiradi", "Shart tekshiradi", "Diagramma yaratadi", "List yaratadi"], "correct": 1}, {"q": "Excel'da diagramma yaratish uchun qaysi menyu ishlatiladi?", "options": ["Insert", "Data", "Review", "View"], "correct": 0}, {"q": "Tarmoq texnologiyalarida IP manzil nima?", "options": ["Qurilma identifikatori", "Fayl nomi", "Server kodi", "Router modeli"], "correct": 0}, {"q": "OSI modeli nechta qatlamdan iborat?", "options": ["5", "6", "7", "8"], "correct": 2}, {"q": "HTTP protokoli nima uchun ishlatiladi?", "options": ["Web sahifa uzatish", "Email yuborish", "File saqlash", "Printer ulash"], "correct": 0}, {"q": "Elektron pochta qabul qilish protokollari qaysilar?", "options": ["POP3 va IMAP", "FTP va SMTP", "HTTP va HTTPS", "DNS va ARP"], "correct": 0}, {"q": "Router vazifasi nima?", "options": ["Tarmoqlarni ulash", "Printer ulash", "Matn yozish", "Video ko'rsatish"], "correct": 0}, {"q": "Subnet mask nima qiladi?", "options": ["Tarmoqni ajratadi", "IP yaratadi", "Server o'chiradi", "DNS yaratadi"], "correct": 0}, {"q": "HTML: <ul><li>Apple</li><li>Orange<ul><li>Banana</li><li>Mango</li></ul></li></ul>. Kod natijasini aniqlang (nechta element):", "options": ["3 element", "4 element", "5 element", "6 element"], "correct": 2}, {"q": "CSS'da 'display:flex' nima uchun ishlatiladi?", "options": ["Layout boshqarish", "Matn yozish", "Rasm yuklash", "Server ulash"], "correct": 0}, {"q": "CSS'da 'margin' nimani bildiradi?", "options": ["Tashqi bo'shliq", "Ichki bo'shliq", "Rang", "Shrift"], "correct": 0}, {"q": "JavaScript'da 'NaN' nimani bildiradi?", "options": ["Not a Number", "New Array Number", "Negative Number", "Null"], "correct": 0}, {"q": "Algoritmda iteration nima?", "options": ["Takrorlash", "Tanlash", "Boshlash", "Tugatish"], "correct": 0}, {"q": "Binary search qaysi massivda ishlaydi?", "options": ["Tartiblangan", "Tasodifiy", "Grafik", "Matn"], "correct": 0}]}, {"id": "sertifikat-3", "title": "Attestatsiya mock test — 3-variant", "desc": "JavaScript, Python, Scratch, Algoritm, Word, Excel, Tarmoq texnologiyalari (50 ta) · 50 savol", "icon": "🌐", "cls": "c3", "cat": "attestatsiya", "note": null, "questions": [{"q": "let arr=[3,6,9]; let r=arr.map(x=>x/3).reduce((a,b)=>a+b); console.log(r); Natijani aniqlang:", "options": ["3", "6", "9", "18"], "correct": 1}, {"q": "JavaScript'da 'let' va 'const' farqi?", "options": ["const o'zgarmaydi", "let global", "const faqat array", "farqi yo'q"], "correct": 0}, {"q": "JavaScript'da '===' operatori nimani tekshiradi?", "options": ["Faqat qiymat", "Qiymat va tip", "Faqat tip", "String"], "correct": 1}, {"q": "x=5; for i in range(3): x+=i; print(x). Natijani aniqlang:", "options": ["5", "6", "8", "9"], "correct": 2}, {"q": "Python'da list va tuple farqi?", "options": ["Tuple o'zgarmaydi", "List o'zgarmaydi", "Ikkalasi bir xil", "Tuple faqat son"], "correct": 0}, {"q": "Python'da dictionary qanday tuzilma?", "options": ["Kalit-qiymat", "Faqat son", "Faqat matn", "Array"], "correct": 0}, {"q": "Scratch'da sprite nima?", "options": ["Harakatlanuvchi obyekt", "Fon", "Kod", "Server"], "correct": 0}, {"q": "Scratch'da 'repeat 10' bloki nima qiladi?", "options": ["10 marta bajaradi", "Cheksiz", "1 marta", "Tasodifiy"], "correct": 0}, {"q": "Flowchart: Start; Input X; If X>10 -> Yes: X=X*2, No: X=X+5; Print X. Algoritm diagrammasiga qarab natijani aniqlang (X=8):", "options": ["16", "13", "8", "21"], "correct": 1}, {"q": "Algoritmning asosiy xususiyatlari qaysilar?", "options": ["Aniqlik va yakunlanish", "Faqat tezlik", "Faqat grafik", "Faqat kod"], "correct": 0}, {"q": "Big-O notatsiyasi nimani bildiradi?", "options": ["Murakkablik", "Disk", "RAM", "Internet"], "correct": 0}, {"q": "MS Word'da matnni markazlash uchun qaysi tugma ishlatiladi?", "options": ["Ctrl+E", "Ctrl+L", "Ctrl+R", "Ctrl+M"], "correct": 0}, {"q": "Word'da sahifa yo'nalishini o'zgartirish menyusi?", "options": ["Layout", "Insert", "Review", "Design"], "correct": 0}, {"q": "Word'da avtomatik mundarija qaysi menyuda?", "options": ["References", "Insert", "View", "Mailings"], "correct": 0}, {"q": "Excel: A1=15, A2=25, A3=10. Formula: =AVERAGE(A1:A3). Natijani aniqlang:", "options": ["10", "15", "20", "25"], "correct": 1}, {"q": "Excel'da SUM funksiyasi nima qiladi?", "options": ["Yig'indi", "O'rtacha", "Qidiruv", "Format"], "correct": 0}, {"q": "Excel'da IF funksiyasi nima qiladi?", "options": ["Shart tekshiradi", "Matn o'zgartiradi", "Diagramma", "Sort"], "correct": 0}, {"q": "Excel'da diagramma yaratish menyusi?", "options": ["Insert", "View", "Data", "Home"], "correct": 0}, {"q": "IP manzil nima?", "options": ["Qurilma identifikatori", "Server", "Router", "Printer"], "correct": 0}, {"q": "OSI modeli nechta qatlamdan iborat?", "options": ["5", "6", "7", "8"], "correct": 2}, {"q": "HTTP protokoli nima qiladi?", "options": ["Web sahifa uzatadi", "Email", "DNS", "FTP"], "correct": 0}, {"q": "POP3 protokoli nima uchun?", "options": ["Email qabul", "File", "Web", "Router"], "correct": 0}, {"q": "Router vazifasi?", "options": ["Tarmoqlarni ulash", "Printer ulash", "Matn yozish", "Video"], "correct": 0}, {"q": "Subnet mask vazifasi?", "options": ["Tarmoqni ajratish", "IP yaratish", "DNS", "Server"], "correct": 0}, {"q": "HTML: <ul><li>A</li><li>B<ul><li>C</li><li>D</li></ul></li></ul>. Kod natijasida nechta element (li) chiqadi?", "options": ["3", "4", "5", "6"], "correct": 1}, {"q": "CSS'da display:flex vazifasi?", "options": ["Layout", "Matn", "Server", "Rasm"], "correct": 0}, {"q": "CSS'da padding nima?", "options": ["Ichki bo'shliq", "Tashqi bo'shliq", "Rang", "Shrift"], "correct": 0}, {"q": "JavaScript'da NaN nimani bildiradi?", "options": ["Not a Number", "Null", "Negative", "Array"], "correct": 0}, {"q": "Binary search qaysi massivda ishlaydi?", "options": ["Tartiblangan", "Tasodifiy", "Grafik", "Matn"], "correct": 0}, {"q": "Algoritmda iteration nima?", "options": ["Takrorlash", "Tanlash", "Start", "End"], "correct": 0}, {"q": "Python'da range(1,5) nechta son beradi?", "options": ["3", "4", "5", "6"], "correct": 1}, {"q": "JavaScript'da array uzunligini aniqlovchi xususiyat?", "options": ["length", "size", "count", "index"], "correct": 0}, {"q": "Excel'da maksimal qiymatni topish funksiyasi?", "options": ["MAX", "SUM", "MIN", "AVG"], "correct": 0}, {"q": "Excel'da MIN funksiyasi nima qiladi?", "options": ["Eng kichik qiymat", "Yig'indi", "O'rtacha", "Sort"], "correct": 0}, {"q": "Word'da yangi sahifa qo'shish?", "options": ["Ctrl+Enter", "Ctrl+N", "Ctrl+P", "Ctrl+T"], "correct": 0}, {"q": "Python'da for sikli nima qiladi?", "options": ["Takrorlash", "Shart", "Funksiya", "Array"], "correct": 0}, {"q": "JavaScript'da function nima?", "options": ["Kod blok", "Array", "Server", "Class"], "correct": 0}, {"q": "Scratch'da 'forever' bloki nima qiladi?", "options": ["Cheksiz takror", "10 marta", "1 marta", "Stop"], "correct": 0}, {"q": "OSI modelining 1-qatlami?", "options": ["Fizik", "Tarmoq", "Transport", "Session"], "correct": 0}, {"q": "DNS nima?", "options": ["Domainni IP ga aylantiradi", "Email", "Router", "Disk"], "correct": 0}, {"q": "IPV4 manzil uzunligi?", "options": ["32 bit", "16 bit", "64 bit", "48 bit"], "correct": 0}, {"q": "Excel'da COUNT funksiyasi?", "options": ["Hujayra soni", "Yig'indi", "Sort", "Format"], "correct": 0}, {"q": "HTML'da <a> tegi vazifasi?", "options": ["Link", "Rasm", "Jadval", "List"], "correct": 0}, {"q": "CSS'da color nimani o'zgartiradi?", "options": ["Matn rangini", "Fon", "Border", "Margin"], "correct": 0}, {"q": "JavaScript'da console.log nima qiladi?", "options": ["Natija chiqaradi", "Server", "Array", "Loop"], "correct": 0}, {"q": "Python'da print funksiyasi?", "options": ["Natija chiqaradi", "Array", "Loop", "File"], "correct": 0}, {"q": "Algoritm diagrammasida romb belgisi?", "options": ["Shart", "Boshlash", "Jarayon", "Tugatish"], "correct": 0}, {"q": "Word'da Ctrl+B nima qiladi?", "options": ["Qalin", "Kursiv", "Markaz", "Rang"], "correct": 0}, {"q": "Excel'da ustun nomlari qaysi harflardan boshlanadi?", "options": ["A", "1", "AA", "Z"], "correct": 0}, {"q": "Router qaysi qurilma turiga kiradi?", "options": ["Tarmoq qurilmasi", "Saqlash", "Kiritish", "Chiqarish"], "correct": 0}]}, {"id": "sertifikat-4", "title": "Attestatsiya mock test — 4-variant", "desc": "Informatika va Pedagogika (Mock test paketi, 50 ta) · 50 savol", "icon": "🎓", "cls": "c4", "cat": "attestatsiya", "note": null, "questions": [{"q": "Jadvalda lotin alifbosining 5 ta harfi uchun ikkilikdagi kodlari: A=00, B=111, C=001, D=10, E=0110. 4 ta xabar kodlandi: 1-xabar: 0011100100110; 2-xabar: 1110010011010; 3-xabar: 0010011011000; 4-xabar: 1000110110011. Agar ulardan faqat bittasi to'g'ri kodlangan bo'lsa, qaysi xabar to'g'ri kodlangan?", "options": ["1-xabar", "2-xabar", "3-xabar", "4-xabar"], "correct": 1}, {"q": "Alisherda 345(6) dona va Mansurda bir qancha olma bor edi. Mansur Alisherdan 101011(2) dona olma oldi. Natijada ulardagi olmalar soni tenglashdi. Eng avvalida Mansurda necha dona olma bo'lganligini 10 lik sanoq sistemasida toping.", "options": ["78", "82", "91", "67"], "correct": 1}, {"q": "Audiofayl yozilish jarayonida ovozli axborot kodining uzunligi 24 bit, diskretlash chastotasi 44 kHz ga teng. Audiofaylning davomiyligi 3 daqiqaga teng bo'lsa, uning hajmini megabaytlarda (butun songacha yaxlitlab) toping.", "options": ["22 MB", "19 MB", "27 MB", "31 MB"], "correct": 0}, {"q": "Turli sanoq sistemalarida berilgan sonlardan yig'indisi eng katta bo'ladigan ikkitasini ko'rsating: 1) 11011011(2), 2) 437(8), 3) 298(10), 4) A3(16)", "options": ["1 va 3", "2 va 4", "3 va 4", "1 va 2"], "correct": 0}, {"q": "Klaviatura tugmachalari bajaradigan vazifasi bilan to'g'ri moslikni toping: 1)Caps Lock a)Kursordan chapda turgan belgini o'chirish; 2)Insert b)Belgilarni almashtirish rejimini yoqish/o'chirish; 3)Delete c)Kursordan o'ngda turgan belgini o'chirish; 4)Backspace d)Barcha harflarni katta/kichik holatga o'tkazish", "options": ["1-d, 2-b, 3-c, 4-a", "1-d, 2-c, 3-a, 4-b", "1-b, 2-d, 3-c, 4-a", "1-a, 2-b, 3-c, 4-d"], "correct": 0}, {"q": "MS Word dasturida A jadval berilgan, ba'zi amallar bajarilgandan so'ng B jadval hosil bo'ldi (ustun va qator o'chirish amallari). ①②③④ o'rniga mos keladigan so'zlarni toping (kursor shakllari va tugmalar ketma-ketligi).", "options": ["pastga yo'nalgan strelka, Delete, o'nga yo'nalgan strelka, Backspace", "pastga yo'nalgan strelka, Backspace, chapga yo'nalgan strelka, Delete", "pastga yo'nalgan strelka, Delete, chapga yo'nalgan strelka, Delete", "yuqoriga yo'nalgan strelka, Delete, pastga yo'nalgan strelka, Backspace"], "correct": 2}, {"q": "Kompyuterlar ishlash prinsipining takomillashgan ko'rinishi Jon Fon Neyman tomonidan taklif etilgan. Zamonaviy kompyuterlarning arxitekturasida quyidagi qismlar qanday tartibda joylashgan? 1-Markaziy protsessor, 2-Operativ xotira, 3-Kiritish qurilmasi, 4-Chiqarish qurilmasi, 5-Axborot magistrali", "options": ["1-2-3-4-5", "1-2-5-3-4", "2-1-5-3-4", "1-5-2-3-4"], "correct": 1}, {"q": "Windows dasturlash muhitida fayllarni qidirish uchun fayl nomi maskalari qo'llaniladi. \"?\" - ixtiyoriy bitta belgini, \"*\" - ixtiyoriy uzunlikdagi har qanday belgini bildiradi. Ushbu maskaga mos keladigan fayl nomini toping: `*co?*.?x?`", "options": ["document.docx", "computer.txt", "record.exe", "icon.ico"], "correct": 0}, {"q": "Agar A = ROST, B = YOLG'ON bo'lsa, u holda quyidagi mantiqiy ifodalardan qaysilari bir xil qiymatga ega bo'ladi? 1) (A U ¬B) ∩ (¬A U B); 2) ¬(A ∩ B) U (A ∩ ¬B); 3) (A -> B) ∩ (B -> A)", "options": ["1, 2", "1, 3", "2, 3", "1, 2, 3"], "correct": 1}, {"q": "Algoritm blok-sxemalarining qaysi biri shartni tekshirish (tarmoqlanish) ni ifodalaydi?", "options": ["To'g'ri to'rtburchak", "Romb", "Paralellogram", "Oval"], "correct": 1}, {"q": "Quyida X mulohaza uchun rostlik jadvali berilgan (A,B,C ustunlari va X natija ustuni). X mulohaza uchun quyidagilardan qaysi biri mos keladi?", "options": ["(A XOR B) ∩ C", "(A ∩ ¬B) U (¬A ∩ B) U C", "(A <-> B) <-> C", "(A U B) ∩ ¬C"], "correct": 0}, {"q": "Ushbu blok-sxema qanday vazifa bajarishini toping: (boshlash -> son kiritish -> agar son > 0 bo'lsa -> son = son * 2 -> aks holda -> son = son + 5 -> natijani chiqarish -> tamom)", "options": ["kiritilgan musbat sonni ikkiga ko'paytiradi, manfiy songa 5 qo'shadi", "kiritilgan sonni tekshirib, har doim musbat qiladi", "kiritilgan sonni 5 ga oshirib, so'ng 2 ga ko'paytiradi", "kiritilgan sonni 2 ga ko'paytirib, so'ng 5 ga oshiradi"], "correct": 0}, {"q": "Quyidagi scriptlardan qaysilari har doim \"Yolg'on\" (false) qiymat qaytaradi? A) `(pick random 1 to 10) = (pick random 1 to 10)`; B) `(pick random 1 to 10) > (pick random 1 to 10) and (pick random 1 to 10) < (pick random 1 to 10)`; C) `not ((pick random 1 to 10) = (pick random 1 to 10))`; D) `(pick random 1 to 10) < 11`", "options": ["A va B", "B va C", "C va D", "A va D"], "correct": 2}, {"q": "(Scratch chizmalar) Quyidagi script ishga tushirilgach \"Qalam\" sprayti qanday ko'rinishdagi shaklni chizadi? tekrorla 4 marta { qalamni tushir; 100 qadam yur; 90 gradusga buril; 50 qadam yur; 90 gradusga buril; qalamni ko'tar; 30 qadam yur }", "options": ["To'rtburchak", "Z shaklida", "N shaklida", "Hech qanday shakl chizmaydi"], "correct": 0}, {"q": "Python. Dastur natijasini aniqlang: a = [3, 6, 2, 8, 5, 1, 9, 4]; c = 0; for i in range(len(a)-2): if a[i]+a[i+1] > a[i+2]: print(i); c += 1; break; if c == 0: print(\"Topilmadi\")", "options": ["0", "1", "2", "Topilmadi"], "correct": 0}, {"q": "Ushbu berilgan dasturda a o'zgaruvchisining qiymati 12 bo'lganda ekranga chiqadigan natijani toping: a = int(input(\"Son: \")); if a < 10: print(\"Kichik\"); if a <= 15: print(\"O'rta\"); if a < 20: print(\"Katta\"); else: print(\"Noma'lum\")", "options": ["Kichik", "O'rta", "Katta", "O'rta Katta"], "correct": 3}, {"q": "Shaxmat taxtasida fil (bishop) bir yurishda faqat diagonal bo'ylab harakatlanadi. x1,y1 va x2,y2 koordinatalari berilgan. Fil bir yurishda bir maydondan ikkinchisiga o'ta oladimi tekshirish uchun qanday mantiqiy ifoda yozilishi kerak?", "options": ["abs(x2-x1) == abs(y2-y1)", "abs(x2-x1) <= 1 and abs(y2-y1) <= 1", "x1 == x2 or y1 == y2", "abs(x2-x1) == abs(y2-y1) or x1 == x2 or y1 == y2"], "correct": 0}, {"q": "MS Word dasturida biror so'zning ustida sichqonchaning chap tugmasi 3 marta tez bosilganda nima sodir bo'ladi?", "options": ["Shu so'z belgilanadi", "Shu so'z turgan abzas to'liq belgilanadi", "Shu so'z turgan qator belgilanadi", "Shu so'z turgan hujjatning hammasi belgilanadi"], "correct": 1}, {"q": "Ko'rsatma: Slaydlar orasida 3 soniyalik animatsiya bo'lib, bir slayddan ikkinchi slaydga 8 soniya interval bilan avtomatik ravishda o'tiladi. Slaydlar almashganda \"Chaqmoq\" ovozi yangraydi. Qaysi javob to'g'ri?", "options": ["O'tish: 3 soniya, Davomiylik: 8 soniya, Ovoz: Chaqmoq", "Davomiylik: 3 soniya, O'tish: 8 soniyadan keyin, Ovoz: Chaqmoq", "Animatsiya: 3 soniya, Interval: 8 soniya, Ovoz: Chaqmoq", "Effekt: 8 soniya, Avtomatik: 3 soniyadan keyin, Ovoz: Chaqmoq"], "correct": 1}, {"q": "C2 katakchasida quyidagi formula yozilgan va C6 gacha avtoto'ldirish qo'llangan: =AGAR(B2<=100000; B2-B2*0.05; AGAR(B2<=200000; B2-B2*0.1; B2-B2*0.15)). Jadval: Anvar 85000, Barno 120000, Dilmurod 210000, Feruza 100000, G'ani 180000. Eng kam va eng ko'p to'lov o'rtasidagi farqni toping.", "options": ["110750 so'm", "102000 so'm", "95000 so'm", "107250 so'm"], "correct": 0}, {"q": "E6 katakchasida formula: =И(КОРЕНЬ(A2)>=3; ОСТАТ(B3;2)=0; C4<0). Jadval: A1=16,B1=-5,C1=3; A2=9,B2=12,C2=-2; A3=4,B3=7,C3=0; A4=25,B4=8,C4=-7. Natijani toping.", "options": ["ИСТИНА", "ЛОЖЬ", "1", "0"], "correct": 0}, {"q": "UzAuto kompaniyasi ishlab chiqarishi: I kvartal-200 ta, II kvartal-250 ta, III kvartal-300 ta, IV kvartal-350 ta. 40% - Cobalt, 30% - Spark, Qolgani - Damas. II va IV kvartallarda ishlab chiqarilgan Cobalt lar soni nechta?", "options": ["220", "240", "260", "280"], "correct": 1}, {"q": "students jadvali (id, full_name, faculty, course, gpa) berilgan. SQL: SELECT full_name, faculty FROM students WHERE faculty = 'Informatika' AND gpa >= 4.0 ORDER BY full_name ASC; Natijani toping.", "options": ["Karimov Ali, Tursunova Malika", "Karimov Ali, Rahimova Zilola, Tursunova Malika", "Karimov Ali, Tursunova Malika, Rahimova Zilola", "Tursunova Malika, Karimov Ali"], "correct": 0}, {"q": "Paint.NET dasturida ranglar palitrasi oynasini yashirish uchun qaysi tugma bosiladi?", "options": ["F5", "F6", "F7", "F8"], "correct": 2}, {"q": "Rasm mayda kvadratlardan tashkil topgan mozaika ko'rinishiga keldi. Qaysi ketma-ketlik to'g'ri?", "options": ["Эффекты -> Размытие -> Мозаика", "Эффекты -> Стилизация -> Мозаика", "Эффекты -> Искажение -> Мозаика", "Эффекты -> Узоры -> Мозаика"], "correct": 1}, {"q": "Ikkilik ko'rinish: 11000000 10101000 00000001 01100100. To'g'ri o'nlik ko'rinishini toping.", "options": ["192.168.1.100", "192.168.0.150", "192.168.2.104", "192.168.1.96"], "correct": 0}, {"q": "Topilgan bo'laklar: A) .168, B) 192., C) 0.1, D) 10. To'g'ri IP manzil hosil qiluvchi ketma-ketlikni toping.", "options": ["BADC", "ACBD", "BACD", "CBAD"], "correct": 2}, {"q": "So'rov natijasi jadvali: Apple & Samsung=250000, Apple & Huawei=180000, Samsung & (Apple | Huawei)=320000, (Apple | Samsung) & Huawei=x. x ni toping.", "options": ["210000", "250000", "270000", "290000"], "correct": 1}, {"q": "Jadval sarlavha qatori uchun qaysi teg ishlatiladi?", "options": ["<tr>", "<th>", "<td>", "<thead>"], "correct": 1}, {"q": "HTML jadvalda width qiymatlariga qarab eng keng ustunni toping: Toshkent width=20%, Samarqand width=300px, Buxoro width=15%, Xiva (belgilanmagan), Namangan, Farg'ona colspan=2, Andijon.", "options": ["Toshkent", "Samarqand", "Farg'ona", "Xiva"], "correct": 1}, {"q": "Firewall nima?", "options": ["Ruxsatsiz kirishni aniqlovchi dastur", "Tarmoq trafigini filtrlovchi xavfsizlik tizimi", "Ma'lumotni shifrlovchi dastur", "Viruslarni yo'q qiluvchi dastur"], "correct": 1}, {"q": "HTML+CSS natijasi: Matn qizil, Fon sariq, Border 2px ko'k. <h1 id=\"sarlavha\" class=\"matn\">Salom Dunyo</h1><p class=\"matn\">Bu test matni</p>. Qaysi CSS qoida bu natijani beradi?", "options": [".matn {color:red; background:yellow; border:2px solid blue;}", "#sarlavha {color:red; background:yellow; border:2px solid blue;}", "h1 {color:red; background:yellow; border:2px solid blue;}", "body {color:red; background:yellow; border:2px solid blue;}"], "correct": 0}, {"q": "Movavi Video Editorda matn qo'shish ketma-ketligi: 1.Matn yozish, 2.Matn yorlig'iga o'tish, 3.Vaqt shkalasiga joylashtirish, 4.Stil tanlash, 5.Eksport qilish. To'g'ri tartibni toping.", "options": ["2,4,1,3,5", "2,1,4,3,5", "4,2,1,3,5", "1,2,4,3,5"], "correct": 0}, {"q": "Tashkilot va jamoatchilik o'rtasidagi axborot oqimini boshqarish faoliyati.", "options": ["Marketing", "PR", "Reklama", "Brending"], "correct": 1}, {"q": "O'qituvchi darsda ko'rgazmali qurollardan foydalanishni rejalashtirdi. Quyidagilardan qaysi biri eng to'g'ri tanlangan tarqatma material hisoblanadi?", "options": ["Dars mavzusiga mos keladigan, o'quvchilarning yosh xususiyatlariga mos namoyish va tarqatma materiallar", "Barcha mavzularni qamrab oluvchi tarqatma materiallar", "Faqat qiziqarli rasmlardan iborat tarqatma materiallar", "Juda murakkab va ko'p ma'lumotli tarqatma materiallar"], "correct": 0}, {"q": "Berilganlardan qaysi biri o'quvchilarning ta'limiy yutuqlarini baholashning mezonlarga asoslangan tizimiga bog'liq emas?", "options": ["O'quvchining o'zlashtirishini ta'minlovchi yaxlit yondashuvni shakllantirish", "Har bir sinf va fan bo'yicha o'quv mazmuni dasturidan kelib chiqqan holda baholash", "O'quvchilarning bir-biri bilan solishtirishga asoslangan baholash", "Ta'lim berish, o'rganish va baholash orasidagi o'zaro bog'liqlik"], "correct": 2}, {"q": "Bir guruh o'quvchilar loyiha ishi ustida juda ko'p mehnat qildilar. Uni bajarib bo'lgach, darsda sinfdoshlari oldida taqdimot o'tkazdilar. O'qituvchi loyiha ishida ba'zi kamchiliklar bo'lsa-da, vazifa yaxshi bajarilganligi va dolzarbligi haqida gapirib, guruh a'zolarini maqtab qo'ydi. U nima uchun bunday qildi?", "options": ["O'quvchilarning erishgan yutuqlari natijalarini tahlil qilish uchun", "O'quvchilarni keyingi ishlar uchun rag'batlantirish va motivatsiyasini oshirish uchun", "O'quvchilar ta'lim jarayonida to'qnashgan qiyinchiliklarini qayd etish uchun", "Baholash mezonlarini tushuntirish uchun"], "correct": 1}, {"q": "O'z-o'zini rivojlantirish va kasbiy o'sish faoliyatiga qaysi javob mos keladi?", "options": ["O'quvchilarning jamoaviy loyihaviy ishlarini tashkil etish", "O'zaro darslarda qatnashish, ularni tahlil qilish va tajribalarni o'z faoliyatida qo'llash", "Ota-onalar bilan hamkorlik qilish", "Sinfda ijobiy muhit yaratish"], "correct": 1}, {"q": "Moslikni toping: 1)Kreativlik, 2)Kommunikativlik, 3)Empatiya, 4)Stressga chidamlilik. a) O'z his-tuyg'ularini boshqarish, stressga chidamlilik; b) Yangi g'oyalarni ishlab chiqarishga moyillik, nostandart fikrlash; c) O'quvchilar bilan to'g'ri muomala qila olish; d) O'quvchilarning hissiy holatini tushunish", "options": ["1-b, 2-c, 3-d, 4-a", "1-c, 2-b, 3-a, 4-d", "1-d, 2-a, 3-b, 4-c", "1-a, 2-b, 3-c, 4-d"], "correct": 0}, {"q": "Moslikni toping: 1)O'z-o'zini rivojlantirish, 2)Tarbiyaviy faoliyat, 3)Hamkasblar bilan hamkorlik, 4)Muloqot madaniyati. A) O'quvchilar bilan muloqotda ijobiy muhit yaratish; B) Malaka oshirish kurslarida qatnashish; C) Darsdan tashqari tadbirlarni tashkil etish; D) Metodik birlashma yig'ilishlarida ishtirok etish", "options": ["1-B, 2-C, 3-D, 4-A", "1-C, 2-B, 3-A, 4-D", "1-D, 2-A, 3-B, 4-C", "1-A, 2-D, 3-C, 4-B"], "correct": 3}, {"q": "Quyidagilardan qaysi biri o'qituvchining pedagogik texnikasiga kiradi? 1.Nutqning aniq va tushunarli bo'lishi; 2.Mimika va jestlardan foydalana olish; 3.Darsni rejalashtirish; 4.Ovoz tembrini boshqara olish", "options": ["1, 2, 3", "1, 2, 4", "2, 3, 4", "1, 3, 4"], "correct": 1}, {"q": "O'quvchilar dars paytida baland ovozda gaplashmoqdalar, bir-birlariga turli narsalarni otmoqdalar. O'qituvchiga nisbatan hurmatsizlik qilmoqdalar. Bunday vaziyatda o'qituvchi nima qilishi kerak? 1.Darsni shu holatda davom ettirish; 2.O'quvchilar diqqatini qiziqarli ma'lumotlar bilan jalb etish; 3.Qattiq ovozda baqirib, ularni tartibga chaqirish; 4.Darsdan keyin suhbatlashish uchun o'quvchilarni chaqirish", "options": ["1, 2", "2, 4", "1, 3", "3, 4"], "correct": 1}, {"q": "Pedagogik muloqot samarali bo'lishi uchun zarur sifatlar: 1.Shirinsuxanlik va insoniylik; 2.Suhbatda hissiy osoyishtalik; 3.O'zaro fikr almashish ko'nikmalari; 4.Doimo o'z fikrini majburlash; 5.Mustaqil fikr yuritishga undash", "options": ["1, 2, 3, 4", "1, 2, 3, 5", "1, 3, 4, 5", "2, 3, 4, 5"], "correct": 1}, {"q": "Yosh mutaxassis hamkasbining darsini kuzatdi va: o'qitish metodlari, o'quvchilarning faolligi, vaqtdan foydalanish kabi jihatlarni tahlil qildi. Bu qaysi tahlil turi?", "options": ["Metodologik tahlil", "Didaktik tahlil", "Psixologik tahlil", "Metodik tahlil"], "correct": 3}, {"q": "O'quvchining oilasida qiyin vaziyat yuz berganini bilib, o'qituvchi unga yordam berdi va qo'shimcha vaqt ajratdi. Bu qaysi sifat?", "options": ["Pedagogik nazorat", "Pedagogik hamdardlik", "Pedagogik talabchanlik", "Pedagogik intuitivlik"], "correct": 1}, {"q": "O'qituvchining pedagogik jarayonda: sog'lom muhit yaratishi, o'quvchilar bilan ijobiy muloqot, ziddiyatlarni bartaraf etishi qaysi kompetensiyada namoyon bo'ladi?", "options": ["Maxsus kompetensiya", "Metodik kompetensiya", "Psixologik kompetensiya", "Axborotiy kompetensiya"], "correct": 2}, {"q": "Pedagogning o'z ustida ishlash bosqichlari: 1.Amaliy harakatlarni rejalashtirish; 2.Faoliyatni tahlil qilish; 3.Kamchiliklarni bartaraf etish qarori; 4.Rejani amalga oshirish. To'g'ri ketma-ketlikni toping.", "options": ["2, 3, 1, 4", "1, 2, 3, 4", "3, 2, 1, 4", "2, 1, 3, 4"], "correct": 0}, {"q": "Moslikni toping: 1)Kreativlik, 2)Refleksiya, 3)Empatiya, 4)Stressga chidamlilik. a)O'z his-tuyg'ularini boshqarish qobiliyati; b)Yangi g'oyalarni yaratish qobiliyati; c)O'z faoliyatini tahlil qilish qobiliyati; d)O'quvchining hissiy holatini tushunish qobiliyati", "options": ["1-b, 2-c, 3-d, 4-a", "1-c, 2-b, 3-a, 4-d", "1-d, 2-a, 3-b, 4-c", "1-a, 2-c, 3-d, 4-b"], "correct": 0}, {"q": "Tanaffusda ikki o'quvchi sport musobaqasida qatnashish uchun tortishib qoldi. O'qituvchi nima qilishi ma'qul?", "options": ["Ikkalasini ham musobaqadan chetlashtirish", "Ikkalasi ham qatnashishi mumkin bo'lgan variantni taklif qilish", "Kim kuchli ekanini aniqlash uchun bellashishga ruxsat berish", "Birinchisini tanlab, ikkinchisiga keyingi safar qatnashishni aytish"], "correct": 1}, {"q": "O'qituvchi yangi mavzuni tushuntirayotganda: asosan o'zi gapirdi, vaqti-vaqti bilan savollar berdi. Bu qanday nutq shakli?", "options": ["Monolog", "Dialog", "Polilog", "Monolog va dialog elementlari"], "correct": 3}]}, {"id": "sertifikat-5", "title": "Attestatsiya mock test — 5-variant", "desc": "Informatika va Pedagogika - Ekspert Test (50 ta) · 50 savol", "icon": "🧮", "cls": "c1", "cat": "attestatsiya", "note": null, "questions": [{"q": "10110,11(2) + 14,4(8) yig'indisini 10-lik sanoq sistemasida hisoblang.", "options": ["34,75", "35,25", "34,875", "35,125"], "correct": 2}, {"q": "Kompyuterda quyidagi yo'l bo'yicha fayl joylashgan: C:\\O'quvchilar\\9-sinf\\Informatika\\Nazorat\\test.docx. Agar biz hozir \"Informatika\" papkasida turgan bo'lsak va bitta pog'ona yuqoriga chiqib, u yerdan \"Adabiyot\" degan yangi papka ochsak, yangi papkaning to'liq manzili qanday ko'rinishda bo'ladi?", "options": ["C:\\O'quvchilar\\9-sinf\\Nazorat\\Adabiyot", "C:\\O'quvchilar\\Adabiyot", "C:\\O'quvchilar\\9-sinf\\Adabiyot", "C:\\O'quvchilar\\9-sinf\\Informatika\\Adabiyot"], "correct": 2}, {"q": "ASCII da yozilgan 4096 ta belgidan iborat matnli fayl 2 barobar siqildi va keyin Unicode (UTF-16) ga o'tkazildi. Yakuniy hajm necha KB?", "options": ["4 KB", "8 KB", "2 KB", "16 KB"], "correct": 0}, {"q": "5 daqiqali stereo (2 kanalli) audio fayl: 16 bit, 44.1 kHz formatida. Taxminiy hajmini toping.", "options": ["25 MB", "50 MB", "75 MB", "100 MB"], "correct": 1}, {"q": "X{16} - 1011{(2)} = 23{(10)} bo'lsa, X ni toping.", "options": ["20", "22", "1E", "24"], "correct": 2}, {"q": "Quyidagi kod natijasini toping: a = [x for x in range(10) if x % 3 == 0]; print(sum(a))", "options": ["18", "9", "27", "15"], "correct": 0}, {"q": "Kod natijasi nima? s = \"P@ython3.10\"; res = \"\".join([i for i in s if i.isdigit()]); print(int(res) + 5)", "options": ["3105", "315", "18", "Xatolik"], "correct": 1}, {"q": "Funksiya natijasini aniqlang: def f(n): if n<=1: return 1; return n*f(n-1); print(f(4))", "options": ["12", "24", "16", "10"], "correct": 1}, {"q": "Ushbu kodda nechta \"*\" belgisi chiqadi? for i in range(2): for j in range(i,3): print(\"*\")", "options": ["6", "5", "4", "3"], "correct": 1}, {"q": "a = {1,2,3} va b = {3,4,5} bo'lsa, print(len(a | b)) natijasi:", "options": ["6", "5", "3", "1"], "correct": 1}, {"q": "A1=5, B1=10. C1 katakga =$A$1+B1 yozildi va C2 ga nusxalandi. C2 dagi natija? (A2=2, B2=4 bo'lsa)", "options": ["6", "9", "14", "7"], "correct": 1}, {"q": "=COUNTIF(A1:A10; \">10\") formulasi nima qiladi?", "options": ["10 dan katta sonlar yig'indisini topadi", "10 dan katta sonlar nechta ekanini sanaydi", "A1 dan A10 gacha 10 ni qidiradi", "Xato formula"], "correct": 1}, {"q": "=IF(OR(5>10; 8<>8); \"A\"; IF(AND(1;1); \"B\"; \"C\")) natijasi:", "options": ["A", "B", "C", "FALSE"], "correct": 1}, {"q": "=VLOOKUP funksiyasining 4-argumenti (Range_lookup) 0 bo'lsa, u nimani anglatadi?", "options": ["Taxminiy moslik", "Aniq moslik", "Alfavit tartibi", "Faqat sonlar"], "correct": 1}, {"q": "=LEN(\"Informatika\") + FIND(\"a\"; \"Informatika\") natijasini toping.", "options": ["18", "19", "20", "21"], "correct": 1}, {"q": "IPv4 manzilida nechta bit mavjud?", "options": ["32", "64", "128", "48"], "correct": 0}, {"q": "192.168.10.15/28 tarmoq niqobini (mask) aniqlang.", "options": ["255.255.255.0", "255.255.255.240", "255.255.255.248", "255.255.255.192"], "correct": 1}, {"q": "OSI modelining qaysi pog'onasida \"Router\" qurilmasi ishlaydi?", "options": ["Physical", "Data Link", "Network", "Transport"], "correct": 2}, {"q": "DNS protokoli qaysi portdan foydalanadi?", "options": ["80", "443", "53", "21"], "correct": 2}, {"q": "2 Mbit/s tezlikdagi kanal orqali 5 MB fayl necha soniyada o'tadi?", "options": ["20 sek", "2.5 sek", "40 sek", "10 sek"], "correct": 0}, {"q": "DROP TABLE users; buyrug'i nima qiladi?", "options": ["Ustunni o'chiradi", "Ma'lumotlarni tozalaydi", "Butun jadvalni yo'qotadi", "Jadval nomini o'zgartiradi"], "correct": 2}, {"q": "SELECT * FROM products ORDER BY price DESC; natijasi qanday bo'ladi?", "options": ["Narx bo'yicha o'sish", "Narx bo'yicha kamayish", "Faqat narxlarni chiqaradi", "Eng arzonini topadi"], "correct": 1}, {"q": "Takrorlanmaydigan qiymatlarni tanlash uchun qaysi kalit so'z ishlatiladi?", "options": ["UNIQUE", "DISTINCT", "ONLY", "GROUP BY"], "correct": 1}, {"q": "HTMLda yangi qatorga o'tish tegi:", "options": ["<lb>", "<break>", "<br>", "<hr>"], "correct": 2}, {"q": "CSS da elementning ichki maydonini (bo'shliq) boshqarish:", "options": ["margin", "padding", "border", "spacing"], "correct": 1}, {"q": "CSS-da ID selektori qaysi belgi bilan yoziladi?", "options": [".", "#", "*", "@"], "correct": 1}, {"q": "Kriptografiyada \"Ochiq kalit\" (Public key) nima uchun xizmat qiladi?", "options": ["Shifrlash", "Shifrni ochish", "Faqat imzo qo'yish", "Virus yo'qotish"], "correct": 0}, {"q": "Protsessor tezligi qaysi birlikda o'lchanadi?", "options": ["Gbit/s", "GHz", "GB", "DPI"], "correct": 1}, {"q": "BIOS qayerda saqlanadi?", "options": ["HDD", "RAM", "ROM", "SSD"], "correct": 2}, {"q": "A = 1, B = 0 bo'lsa, A XOR B natijasi:", "options": ["0", "1", "Xato", "Aniqlanmaydi"], "correct": 1}, {"q": "¬(A ∨ B) ≡ ¬A ∧ ¬B ushbu qoida kimning qonuni?", "options": ["Pifagor", "De Morgan", "Bul", "Nyuton"], "correct": 1}, {"q": "\"Open Source\" (Ochiq kodli) operatsion tizimni toping.", "options": ["Windows 11", "macOS", "Ubuntu Linux", "iOS"], "correct": 2}, {"q": "Kompilyator va Interpretator farqi nimada?", "options": ["Birinchisi tezroq, ikkinchisi sekinroq", "Kompilyator kodni butunlay, interpretator qatorma-qator tarjima qiladi", "Interpretator faqat Windowsda ishlaydi", "Farqi yo'q"], "correct": 1}, {"q": "Bloom taksonomiyasining eng yuqori pog'onasi (yangilangan versiyada):", "options": ["Bilish", "Tahlil", "Baholash", "Yaratish (Sintez)"], "correct": 3}, {"q": "\"Flipped Classroom\" (To'ntarilgan sinf) metodining mohiyati:", "options": ["Sinfda uxlash", "Nazariya uyda o'rganiladi, amaliyot darsda bajariladi", "O'qituvchisiz dars o'tish", "Faqat test yechish"], "correct": 1}, {"q": "SMART maqsad qo'yishda \"R\" harfi nimani anglatadi?", "options": ["Rapid (Tezkor)", "Relevant (Asosli/Mos)", "Random (Tasodifiy)", "Real (Haqiqiy)"], "correct": 1}, {"q": "Formativ baholash bu — ...", "options": ["Chorak yakunidagi baholash", "O'quv jarayoni davomida rivojlantiruvchi baholash", "Imtihon bahosi", "Jazolash usuli"], "correct": 1}, {"q": "Sokratik metod nima?", "options": ["Ma'ruza o'qish", "Savol-javob orqali haqiqatga erishish", "Faqat kitob o'qish", "Guruh bo'lib ishlash"], "correct": 1}, {"q": "Inklyuziv ta'lim nima?", "options": ["Faqat iqtidorli bolalar uchun ta'lim", "Imkoniyati cheklangan bolalarning sog'lom bolalar bilan birga o'qishi", "Masofaviy o'qish", "Pullik ta'lim"], "correct": 1}, {"q": "\"Keys-stadi\" (Case study) metodi maqsadi:", "options": ["Matnni yodlash", "Muammoli vaziyatni tahlil qilish va yechim topish", "Lug'at boyligini oshirish", "Chiroyli yozishni o'rgatish"], "correct": 1}, {"q": "Pedagogik texnologiya — bu:", "options": ["Faqat kompyuterdan foydalanish", "Ta'lim maqsadiga erishishning tizimlashtirilgan usullari yig'indisi", "Maktab binosi", "Dars jadvali"], "correct": 1}, {"q": "Refleksiya darsning qaysi qismida o'tkaziladi?", "options": ["Boshida", "O'rtasida", "Yakunida", "Tanaffusda"], "correct": 2}, {"q": "HTML: <head><title>Mening saytim</title></head>. \"Mening saytim\" yozuvi brauzerning qayerida ko'rinadi?", "options": ["Sahifaning eng tepasida, sarlavha (H1) sifatida", "Brauzerning vkladka (tab) qismida", "Sahifaning eng pastki (footer) qismida", "Faqat kod qidirilganda (ko'rinmaydi)"], "correct": 1}, {"q": "CSS: Elementning atrofidagi tashqi bo'shliqni (boshqa elementlardan uzoqlashtirish) qaysi xususiyat boshqaradi?", "options": ["padding", "border", "margin", "spacing"], "correct": 2}, {"q": "JavaScript: let x = \"5\" + 2; let y = \"5\" - 2; console.log(x, y); Konsolga nima chiqadi?", "options": ["7 3", "52 3", "52 NaN", "7 NaN"], "correct": 1}, {"q": "C++: for(int i=0; i<10; i+=2) { cout << i << \" \"; } Ushbu kod parchasining vazifasi nima?", "options": ["0 dan 10 gacha bo'lgan barcha sonlarni chiqaradi", "0 dan 9 gacha bo'lgan toq sonlarni chiqaradi", "0 dan 8 gacha bo'lgan juft sonlarni chiqaradi", "10 dan 0 gacha kamayib boruvchi sonlarni chiqaradi"], "correct": 2}, {"q": "Veb-tuzilishi: HTMLda rasmni to'g'ri joylashtirish kodini toping:", "options": ["<img src=\"foto.jpg\" alt=\"Rasm\">", "<image href=\"foto.jpg\">", "<pic source=\"foto.jpg\">", "<img link=\"foto.jpg\">"], "correct": 0}, {"q": "C++: O'zgaruvchi nomini e'lon qilishda qaysi variant xato hisoblanadi?", "options": ["int mening_sonim = 10;", "int son123 = 5;", "int 123son = 5;", "int _son = 2;"], "correct": 2}, {"q": "CSS/JS: Sahifadagi tugmani bosganda rangini o'zgartirish uchun qaysi tildan foydalanish eng to'g'ri (dinamiklik uchun)?", "options": ["Faqat HTML", "JavaScript", "C++", "SQL"], "correct": 1}, {"q": "JavaScript: Funksiyani to'g'ri e'lon qilish variantini ko'rsating.", "options": ["function: myFunc() {}", "def myFunc():", "function myFunc() {}", "void myFunc {}"], "correct": 2}]}, {"id": "sertifikat-6", "title": "Attestatsiya mock test — 6-variant", "desc": "Informatika va Pedagogika (50 ta) · 50 savol", "icon": "📊", "cls": "c2", "cat": "attestatsiya", "note": null, "questions": [{"q": "MS Wordda barcha \"Sertifikat\" so'zlarini bir vaqtning o'zida qalin (Bold) va qizil rangga o'tkazish uchun qaysi amal bajariladi?", "options": ["Home -> Replace (Format tugmasi orqali)", "Layout -> Selection Pane orqali belgilash", "Insert -> Quick Parts menyusidan foydalanish", "Review -> Track Changes rejimi"], "correct": 0}, {"q": "MS Excelda A1=10, B1=20 bo'lsa, =AVERAGE(A1:B1; 30) formulasi natijasi necha?", "options": ["30", "60", "20", "15"], "correct": 2}, {"q": "Excel jadvalida C1 katakda =A1^B1 yozilgan. Agar A1=5, B1=2 va A2=10 bo'lsa, C1 dagi formulani C2 ga tortganda (avtoto'ldirish) qanday natija chiqadi?", "options": ["100", "25", "10", "49 (agar B2=$A$1+B1 bo'lsa)"], "correct": 0}, {"q": "MS Excelda matematik amalda noto'g'ri ma'lumot turi (masalan, sonni matnga ko'paytirish) ishlatilsa, qanday xatolik chiqadi?", "options": ["#REF!", "#VALUE!", "#DIV/0!", "#NAME?"], "correct": 1}, {"q": "MS Wordda sahifadagi barcha jadvallarga avtomatik tarzda tartib raqami va nom (Masalan: \"1-jadval\") berish funksiyasi qayerda joylashgan?", "options": ["References -> Insert Caption", "Insert -> Table -> Properties", "View -> Macros", "Review -> New Comment"], "correct": 0}, {"q": "MS Excel: =IF(AND(A1>5; B1<10); \"Ok\"; \"No\") formulasi A1=6, B1=10 bo'lganda nima qaytaradi?", "options": ["TRUE", "Ok", "#ERROR", "No"], "correct": 3}, {"q": "MS Excelda $C1 ko'rinishidagi murojaat (reference) qanday turga kiradi?", "options": ["Mutlaq murojaat", "Nisbiy murojaat", "Aralash (ustun qulflangan)", "Aralash (satr qulflangan)"], "correct": 2}, {"q": "MS Wordda \"Makroslar\" (Macros) qaysi dasturlash tili asosida tahrirlanadi?", "options": ["Python", "JavaScript", "VBA (Visual Basic for Applications)", "C++"], "correct": 2}, {"q": "MS Excelda =INDEX(A1:C10; 3; 2) formulasi qaysi katakdagi qiymatni qaytaradi?", "options": ["C2", "B3", "A3", "B2"], "correct": 1}, {"q": "MS Excelda {10; 20; 30; 40; 50} massividan faqat 25 dan kattalarini yig'ish uchun qaysi massiv formulasi ishlatiladi?", "options": ["=SUM(IF(A1:A5>25; A1:A5; 0))", "=SUMIF(A1:A5; \">25\")", "=COUNTIF(A1:A5; \">25\")", "A va B javoblar to'g'ri"], "correct": 3}, {"q": "Evklid algoritmi (Start -> a,b -> a!=b -> ...) yordamida sonlar ustida qanday amal bajariladi?", "options": ["Eng kichik umumiy karrali (EKUK)", "Eng katta umumiy bo'luvchi (EKUB)", "Sonlarning ko'paytmasi", "Tub sonlarni aniqlash"], "correct": 1}, {"q": "Algoritmning har bir ko'rsatmasi aniq va bir ma'noli bo'lishi uning qaysi xossasiga kiradi?", "options": ["Diskretlilik", "Determiniylik (Tushunarlilik)", "Ommaviylik", "Natijaviylik"], "correct": 1}, {"q": "Murakkab shartli mulohaza: ¬(A ∧ B) ∨ C ifodada A=1, B=1, C=0 bo'lsa, natija nima bo'ladi?", "options": ["1", "0", "Rost", "Xato"], "correct": 1}, {"q": "AF(16) + 12(8) yig'indisini 10-likda hisoblang.", "options": ["175", "195", "185", "200"], "correct": 2}, {"q": "Mantiqiy sxema: F = (A ∧ B) ∨ (¬A ∧ C) funksiyasi uchun A=0, B=1, C=1 bo'lganda natija nima?", "options": ["0", "1", "Yolg'on", "Xatolik"], "correct": 1}, {"q": "Algoritm murakkabligi (Big O): Agar ma'lumot n ikki barobar oshganda, vaqt faqat bitta qadamga oshsa, bu qanday murakkablik?", "options": ["O(n)", "O(1)", "O(n^2)", "O(log n)"], "correct": 3}, {"q": "Stek (Stack) ma'lumotlar tuzilmasida elementlar qaysi tartibda qayta ishlanadi?", "options": ["FIFO (First In First Out)", "LIFO (Last In First Out)", "Random Access", "Priority Queue"], "correct": 1}, {"q": "Daraxtsimon strukturada (Binary Tree) 4 ta daraja to'liq to'ldirilgan bo'lsa, undagi jami tugunlar (nodes) soni nechta?", "options": ["15", "31", "16", "7"], "correct": 0}, {"q": "Scratch-da rasmning yo'nalishini 90 darajaga o'zgartirish qaysi bloklar guruhiga kiradi?", "options": ["Motion (Harakat)", "Events", "Looks", "Sensing"], "correct": 0}, {"q": "Scratch: Sprite rangini to'liq doira bo'yicha o'zgartirish uchun color effect qiymati qanchaga o'zgarishi kerak?", "options": ["100", "255", "200", "360"], "correct": 2}, {"q": "Python: print([i**2 for i in range(4) if i%2!=0]) natijasi?", "options": ["[1, 9]", "[1]", "[0, 4]", "[1, 4, 9]"], "correct": 0}, {"q": "C++: int x = 7; cout << (x >> 1); natijasi necha?", "options": ["14", "1", "3", "3.5"], "correct": 2}, {"q": "Python: d = {\"a\": 1, \"b\": 2}; print(d.get(\"c\", 3)) natijasi?", "options": ["3", "None", "Xatolik", "0"], "correct": 0}, {"q": "C++: int a=5, b=2; float c = a/b; cout << c; natijasi?", "options": ["2.5", "3", "2.0", "2"], "correct": 2}, {"q": "Python: s = \"Informatika\"; print(s[-3:]) natijasi?", "options": ["mat", "ika", "tik", "Inf"], "correct": 1}, {"q": "C++: Qaysi operator xotiradan ajratilgan dinamik maydonni bo'shatadi?", "options": ["delete", "free", "remove", "clear"], "correct": 0}, {"q": "Python: a = (1, 2, [3, 4]); a[2][0] = 5; print(a) natijasi nima?", "options": ["Xatolik", "(1, 2, [3, 4])", "(1, 2, [5, 4])", "(1, 5, [3, 4])"], "correct": 2}, {"q": "JavaScript: console.log(1 + \"2\" + 3) natijasi?", "options": ["6", "123", "15", "NaN"], "correct": 1}, {"q": "JavaScript: const arr = [1, 2, 3]; arr.push(4); console.log(arr.length); natijasi?", "options": ["3", "4", "Xatolik", "undefined"], "correct": 1}, {"q": "Python: def funk(x, y=[]): y.append(x); return y; print(funk(1), funk(2)) natijasi?", "options": ["[1] [2]", "[1, 2] [1, 2]", "[1] [1, 2]", "Xatolik"], "correct": 2}, {"q": "C++: int a = 5; int &b = a; b++; cout << a; kodi natijasi?", "options": ["6", "5", "Xotira manzili", "Xatolik"], "correct": 0}, {"q": "JavaScript: Promise.resolve(1).then(x => x + 1).then(x => { throw x }).catch(x => x + 1).then(x => console.log(x)) natijasi?", "options": ["1", "2", "3", "Xatolik"], "correct": 2}, {"q": "Python: a = [1, 2, 3]; b = a[:]; b[0] = 10; print(a[0]) natijasi?", "options": ["10", "1", "[10, 2, 3]", "0"], "correct": 1}, {"q": "C++ da struct va class orasidagi asosiy farq nimada?", "options": ["Klassda xotira ko'p ishlatiladi", "Strukturada a'zolar sukut bo'yicha public, klassda private bo'ladi", "Struktura funksiyalarni saqlay olmaydi", "Farqi yo'q"], "correct": 1}, {"q": "SQL: UPDATE users SET status = 'active' WHERE id > 10; so'rovi nima qiladi?", "options": ["IDsi 10 bo'lgan foydalanuvchini o'chiradi", "Yangi foydalanuvchi qo'shadi", "IDsi 10 dan katta foydalanuvchilarning statusini yangilaydi", "Jadvalni o'chiradi"], "correct": 2}, {"q": "JavaScript: 0 == false va 0 === false natijalari qanday?", "options": ["true, true", "false, false", "true, false", "false, true"], "correct": 2}, {"q": "Python: * (splat) operatori ro'yxat oldidan ishlatilsa (print(*[1,2,3])), vazifasi nima?", "options": ["Ro'yxatni elementlarga yoyib yuboradi (unpacking)", "Ro'yxatni ko'paytiradi", "Ro'yxatni manzilini chiqaradi", "Xatolik beradi"], "correct": 0}, {"q": "C++: int arr[5] = {1, 2, 3, 4, 5}; cout << *(arr + 2); natijasi?", "options": ["2", "3", "4", "Xotira manzili"], "correct": 1}, {"q": "SQL: Jadvaldan ma'lumotlarni shart asosida o'chirish buyrug'i qaysi?", "options": ["REMOVE", "DROP", "DELETE", "UPDATE"], "correct": 2}, {"q": "HTML: Formadagi ma'lumotlarni serverga maxfiy/xavfsiz yuborish uchun qaysi metod ishlatiladi?", "options": ["GET", "POST", "SEND", "HIDDEN"], "correct": 1}, {"q": "OSI modelining \"Sessiya\" (Session) pog'onasi nechanchi pog'ona hisoblanadi?", "options": ["4", "5", "6", "3"], "correct": 1}, {"q": "100 Mbit/s tezlikdagi tarmoq orqali 25 MB faylni o'tkazish uchun necha soniya ketadi?", "options": ["0.25 sek", "8 sek", "2 sek", "4 sek"], "correct": 2}, {"q": "IPv6 manzili necha bitdan iborat?", "options": ["128", "32", "64", "256"], "correct": 0}, {"q": "Asimmetrik shifrlashda (RSA) ma'lumotni shifrlash va ochish qanday amalga oshiriladi?", "options": ["Shaxsiy kalit bilan shifrlanadi, ochiq kalit bilan ochiladi", "Ochiq kalit bilan shifrlanadi, shaxsiy kalit bilan ochiladi", "Har doim bitta kalit ishlatiladi", "Faqat parol orqali"], "correct": 1}, {"q": "O'quvchining dars davomidagi faoliyatini kuzatib, unga yo'nalish berib borish qaysi baholash turiga kiradi?", "options": ["Summativ", "Formativ", "Diagnostik", "Normativ"], "correct": 1}, {"q": "SMART texnologiyasida \"M\" harfi nimani anglatadi?", "options": ["Measurable (O'lchanadigan)", "Motivated", "Modern", "Memory"], "correct": 0}, {"q": "\"Aqliy hujum\" metodining oltin qoidasi nima?", "options": ["Har bir javobni darhol tahlil qilish", "G'oyalarni tanqid qilmaslik (miqdorni ko'paytirish)", "Faqat to'g'ri javoblarni yozish", "Faqat o'qituvchi boshqarishi"], "correct": 1}, {"q": "PISA xalqaro baholash dasturi asosan necha yoshli o'quvchilarni qamrab oladi?", "options": ["10 yosh", "18 yosh", "15 yosh", "7 yosh"], "correct": 2}, {"q": "Bloom taksonomiyasining \"Qo'llash\" bosqichida o'quvchi nima qilishi kerak?", "options": ["Nazariy bilimni amaliy vaziyatda ishlata olish", "Ma'lumotni yoddan aytish", "Mavzuni qismlarga ajratish", "Yangi g'oya yaratish"], "correct": 0}, {"q": "O'quvchilar guruhlarda ishlayotganda o'qituvchi ularga tayyor yechim bermay, faqat yo'naltiruvchi savollar bersa, bu qaysi yondashuv?", "options": ["Konstruktivizm", "Biheviorizm", "Avtoritarizm", "Passiv ta'lim"], "correct": 0}]}, {"id": "sertifikat-7", "title": "Attestatsiya mock test — 7-variant", "desc": "Attestatsiya va Pedagogika (50 ta, Expert daraja) · 50 savol", "icon": "🔧", "cls": "c3", "cat": "attestatsiya", "note": null, "questions": [{"q": "Sizda 200 sahifalik kitob maketi bor. Kitobning 1-sahifasi (Titul), 2-sahifasi (Mundarija) va 3-sahifasida (Muqaddima) sahifa raqami ko'rinmasligi, lekin 4-sahifadan boshlab raqamlash aynan \"4\" raqamidan davom etishi kerak. Buning uchun qaysi amal birinchi navbatda bajarilishi shart?", "options": ["Insert -> Page Number menyusidan \"Start at 4\" ni tanlash", "3- va 4- sahifalar orasiga Layout -> Breaks -> Next Page (bo'lim uzilishi) qo'yish", "4-sahifada Header & Footer bo'limida \"Link to Previous\" tugmasini yoqish", "Barcha sahifalarni alohida fayllarga bo'lib chiqish"], "correct": 1}, {"q": "Jadval: Olma 10 dona 5000 narx; Nok 5 dona 8000 narx; Olma 4 dona 5500 narx. Faqat \"Olma\"larning umumiy summasini (Soni * Narxi) bitta formulada hisoblash uchun qaysi massiv formulasi (Ctrl+Shift+Enter) to'g'ri hisoblaydi?", "options": ["=SUMIF(A1:A3; \"Olma\"; B1:B3*C1:C3)", "=SUM((A1:A3=\"Olma\")*B1:B3*C1:C3)", "=SUMPRODUCT(A1:A3=\"Olma\"; B1:C3)", "=SUM(IF(A1:A3=\"Olma\"; B1:B3); C1:C3)"], "correct": 1}, {"q": "=VLOOKUP(\"Ekspert\"; A1:D100; 3; FALSE) formulasi ishlatilganda #N/A xatoligi chiqdi. Bu nimani anglatadi?", "options": ["3-ustunda ma'lumot turi noto'g'ri", "A1:A100 oralig'ida \"Ekspert\" so'zi mavjud emas", "Jadvalda 3 ta ustun mavjud emas", "Formula yozilishida mantiqiy xato bor"], "correct": 1}, {"q": "Hujjatda bir xil uslubdagi (masalan, \"Sarlavha 1\") sarlavhalar rangini va shriftini butun hujjat bo'ylab bir marta o'zgartirish bilan barchasiga qo'llash uchun qaysi bo'limdan foydalaniladi?", "options": ["Home -> Replace", "Home -> Styles (Sarlavha ustiga o'ng tugma -> Modify)", "Design -> Page Color", "Insert -> Quick Parts"], "correct": 1}, {"q": "A1 katakda o'quvchining bali (85) turibdi. Quyidagi formula qanday natija beradi? =IF(A1>90; \"A\"; IF(A1>80; \"B\"; IF(A1>70; \"C\"; \"D\")))", "options": ["A", "B", "C", "D"], "correct": 1}, {"q": "A1 katakda 01.01.2024 sanasi yozilgan. =EDATE(A1; 3) formulasi natijasi qanday bo'ladi?", "options": ["04.01.2024", "01.04.2024", "01.01.2027", "31.03.2024"], "correct": 1}, {"q": "100 ta xodimga bir xil shakldagi, lekin ism-familiyasi har xil bo'lgan bildirishnomalarni Exceldagi ro'yxat asosida avtomatik tayyorlash uchun qaysi texnologiya ishlatiladi?", "options": ["Review -> Track Changes", "Mailings -> Start Mail Merge", "Insert -> Object", "Layout -> Hyphenation"], "correct": 1}, {"q": "Excelda ma'lumotni chapdan o'ngga emas, balki o'ngdan chapga (ya'ni 3-ustundagi qiymatga qarab 1-ustundagi nomni topish) qidirish uchun qaysi funksiyalar kombinatsiyasi eng samarali?", "options": ["VLOOKUP va HLOOKUP", "INDEX va MATCH", "LOOKUP va CHOOSE", "IF va AND"], "correct": 1}, {"q": "Hujjatning faqat ma'lum bir qismlarini tahrirlashga ruxsat berib, qolgan qismlarini bloklab qo'yish (parollash) qaysi bo'limda amalga oshiriladi?", "options": ["File -> Info -> Protect Document -> Restrict Editing", "View -> Macros", "Page Layout -> Selection Pane", "References -> Manage Sources"], "correct": 0}, {"q": "=SUMPRODUCT((MOD(A1:A10; 2)=0)*A1:A10) formulasi nima ishni bajaradi?", "options": ["A1 dan A10 gacha bo'lgan barcha sonlarni qo'shadi", "Faqat toq o'rindagi sonlarni qo'shadi", "Faqat juft sonlarning yig'indisini hisoblaydi", "Sonlarni 2 ga ko'paytirib, keyin yig'indisini topadi"], "correct": 2}, {"q": "Ikki jadval o'rtasidagi bog'liqlik: Xodimlar(ID,Ism,Lavozim) va Maoshlar(Maosh_ID, Xodim_ID FK, Summa). \"Ma'lumotlar butunligini ta'minlash\" (Referential Integrity) yoqilgan holatda, \"Xodimlar\" jadvalidan \"ID: 102\" bo'lgan xodimni o'chirishga harakat qilinsa nima sodir bo'ladi?", "options": ["Xodim o'chib ketadi, lekin \"Maoshlar\" jadvalidagi 2-satr saqlanib qoladi", "Tizim xatolik haqida ogohlantiradi va o'chirishni taqiqlaydi (chunki bog'liq ma'lumot mavjud)", "Har ikkala jadvaldan 102-IDga tegishli ma'lumotlar avtomatik o'chadi", "Faqat \"Maoshlar\" jadvalidagi summa nolga teng bo'lib qoladi"], "correct": 1}, {"q": "\"Sotuvlar\" jadvalida SELECT Mahsulot, SUM(Miqdor) FROM Sotuvlar GROUP BY Mahsulot; so'rovi berilsa (jadvalda Monitor, Sichqoncha, Monitor, Klaviatura, Sichqoncha mahsulotlari bor), natijada necha qator ma'lumot hosil bo'ladi?", "options": ["5 qator (jadvaldagi barcha yozuvlar)", "2 qator (faqat takrorlangan mahsulotlar)", "3 qator (Monitor, Sichqoncha, Klaviatura)", "1 qator (barcha miqdorlar yig'indisi)"], "correct": 2}, {"q": "\"Yoshi\" maydoni uchun o'qituvchi faqat 18 yoshdan 65 yoshgacha bo'lgan shaxslarni kiritishga ruxsat bermoqchi. Validation Rule qismiga qaysi ifoda yozilishi shart?", "options": [">=18 OR <=65", "BETWEEN 18 AND 65", "18 < Yoshi < 65", "IN (18; 65)"], "correct": 1}, {"q": "Mutable Default Arguments: def append_item(n, l=[]): l.append(n); return l; print(append_item(1), end=\" \"); print(append_item(2))", "options": ["[1] [2]", "[1] [1, 2]", "[1] []", "Error"], "correct": 1}, {"q": "List Slicing & Memory: a = [1, 2, 3, 4, 5]; a[1:4] = [0]. Amal bajarilgandan so'ng a ro'yxatining holati qanday bo'ladi?", "options": ["[1, 0, 4, 5]", "[1, 0, 5]", "[1, 2, 0, 4, 5]", "[0, 5]"], "correct": 1}, {"q": "is vs == operatorlari: x = [1, 2]; y = [1, 2]; print(x == y, x is y)", "options": ["True True", "False False", "True False", "False True"], "correct": 2}, {"q": "Dekorator funksiya ichida asosiy funksiya chaqirilganda, u qaysi scope (muhit) ma'lumotlaridan foydalanadi?", "options": ["Global scope", "Local scope", "Closure (yopiq muhit)", "Faqat dekorator parametrlari"], "correct": 2}, {"q": "Pointer Arithmetic: int arr[] = {10, 20, 30}; int *p = arr; cout << *(p++) << \" \" << *p; Natijani aniqlang.", "options": ["10 10", "20 20", "10 20", "20 30"], "correct": 2}, {"q": "Agar Base klassidagi funksiya virtual deb e'lon qilinmasa va Derived klassida qayta yozilsa (override), Base* ptr = new Derived(); ptr->show(); qaysi funksiyani chaqiradi?", "options": ["Base klassdagini", "Derived klassdagini", "Xatolik beradi", "Ikkalasini ham"], "correct": 0}, {"q": "Obyekt yaratilganda Parent -> Child tartibida ishlaydi. O'chirilganda (Destructor) qaysi tartibda ishlaydi?", "options": ["Parent -> Child", "Child -> Parent", "Bir vaqtda", "Faqat Child"], "correct": 1}, {"q": "int const *p ifodasi nimani anglatadi?", "options": ["Ko'rsatkich manzili o'zgarmas", "Ko'rsatkich ko'rsatayotgan qiymat o'zgarmas", "Ikkalasi ham o'zgarmas", "Hech biri o'zgarmas emas"], "correct": 1}, {"q": "Event Loop: console.log(\"1\"); setTimeout(() => console.log(\"2\"), 0); Promise.resolve().then(() => console.log(\"3\")); console.log(\"4\"); Qanday tartibda konsolga chiqadi?", "options": ["1 2 3 4", "1 4 2 3", "1 4 3 2", "3 1 4 2"], "correct": 2}, {"q": "Arrow funksiya ichidagi this qaysi obyektga bog'lanadi?", "options": ["O'zi chaqirilgan obyektga", "Global (Window/Global) obyektga", "Lexical scope (tashqi muhit) dagi thisga", "undefined bo'ladi"], "correct": 2}, {"q": "for (var i = 0; i < 3; i++) { setTimeout(() => console.log(i), 100); } Ushbu sikl natijasida nima chiqadi?", "options": ["0 1 2", "3 3 3", "2 2 2", "0 0 0"], "correct": 1}, {"q": "Type Coercion: [] + [] -> \"\"; [] + {} -> \"[object Object]\"; false == 0 -> ?", "options": ["false", "true", "undefined", "TypeError"], "correct": 1}, {"q": "HTML: <div id=\"konteyner\" class=\"asosiy\"><p id=\"matn_id\" class=\"qizil ko'k\" style=\"color: grey;\">Matn</p></div>. CSS: #konteyner p{color:yellow;font-size:20px;} div.asosiy .qizil{color:red;font-size:25px;} .ko'k{color:blue !important;} p#matn_id{color:green;font-size:30px;}. \"Matn\" so'zi qanday rangda va shriftda ko'rinadi?", "options": ["Rang: Sariq; Shrift: 20px", "Rang: Yashil; Shrift: 30px", "Rang: Moviy (Blue); Shrift: 30px", "Rang: Kulrang (Grey); Shrift: 25px"], "correct": 2}, {"q": "1 dan 1000 gacha saralangan ro'yxatda son qidirilmoqda (eng yomon holatda ro'yxat oxirida). Chiziqli qidiruv va Binar qidiruv urinishlar soni qanday farq qiladi?", "options": ["Chiziqli: 1000 urinish; Binar: 500 urinish", "Chiziqli: 1000 urinish; Binar: 10 urinish (2^10=1024)", "Chiziqli: 100 urinish; Binar: 100 urinish", "Chiziqli: 500 urinish; Binar: 1 urinish"], "correct": 1}, {"q": "Rekursiv funksiya: def hisobla(n): if n<=1: return 1; else: return n + hisobla(n-1). hisobla(4) chaqirilsa, natija necha chiqadi va funksiya o'z-o'zini necha marta chaqiradi?", "options": ["Natija: 4; Chaqiriqlar soni: 1 marta", "Natija: 10; Chaqiriqlar soni: 4 marta", "Natija: 24; Chaqiriqlar soni: 4 marta", "Natija: 7; Chaqiriqlar soni: 3 marta"], "correct": 1}, {"q": "A = true, B = false bo'lsa. Ifoda: (A || B) && (C || !A). C ning qiymatidan qat'i nazar natijani oldindan aytish mumkinmi?", "options": ["Ha, natija har doim true bo'ladi", "Yo'q, natija C ga bog'liq bo'lib qoladi", "Ha, natija har doim false bo'ladi", "Faqat C = true bo'lgandagina aniqlash mumkin"], "correct": 1}, {"q": "Tizimga kirish shartlari: U Admin bo'lishi kerak (A) YOKI Xodim (B) VA maxsus Kalitga (C) ega bo'lishi kerak. Lekin tizim Bloklangan (D) bo'lsa, hech kim kira olmaydi. Ushbu mantiqiy mulohazani qaysi ifoda to'g'ri ifodalaydi?", "options": ["(A || B && C) && !D", "A && B || C && D", "!(A || B) && C || D", "(A || B) && (C || !D)"], "correct": 0}, {"q": "Robot datchigi 8 bitli son qaytaradi. Bizga faqat 3-bit (o'ngdan sanaganda) datchikning holati qiziq. Qolgan bitlar xalaqit bermasligi uchun qaysi amal (Masking) eng to'g'ri?", "options": ["Sonni 00001000 (8) soni bilan OR qilish", "Sonni 00001000 (8) soni bilan AND qilish", "Sonni 11110111 soni bilan NOT qilish", "Sonni 00000100 (4) soni bilan ko'paytirish"], "correct": 1}, {"q": "Internet ishlamay qoldi. ping 127.0.0.1 - Muvaffaqiyatli. ping 192.168.1.1 (Router) - Request timed out. Muammo qayerda ekanligini taxmin qilish mumkin?", "options": ["Kompyuterning tarmoq kartasi (NIC) jismonan buzilgan", "Muammo provayder tomonida, internet kabeli uzilgan", "Kompyuter va Router o'rtasidagi jismoniy ulanishda yoki IP manzillar mosligida xatolik bor", "DNS server xato sozlangan"], "correct": 2}, {"q": "Kichik ofisda 20 ta kompyuter bitta Router orqali internetga chiqadi. Provayder faqat bitta \"Ommaviy\" IP manzil bergan. Barcha kompyuterlar bir vaqtda internetga chiqishi uchun Routerda qaysi texnologiya ishlatilishi shart?", "options": ["DHCP", "NAT (Network Address Translation)", "VLAN", "FTP"], "correct": 1}, {"q": "Server fayrvollida Veb-sayt (HTTP/HTTPS) va FTP xizmatlarini yoqish uchun qaysi portlarni ochish kerak? (FTP:21, HTTP:80, HTTPS:443)", "options": ["21, 80, 443", "22, 25, 110", "53, 67, 68", "3389, 445, 139"], "correct": 0}, {"q": "Sprit sahna markazida (x=0,y=0) turibdi. Skript: go to x:0 y:0; change x by 50; change y by -30; move 10 steps (yo'nalish 90°). Yakuniy koordinatalari qanday bo'ladi?", "options": ["x=50, y=-30", "x=60, y=-30", "x=40, y=-20", "x=60, y=0"], "correct": 1}, {"q": "Skript: Erase all; Pen down; Repeat 4: {Move 100 steps; Turn right 90 degrees}. Sahnada qanday shakl hosil bo'ladi?", "options": ["Teng tomonli uchburchak", "Aylana", "Kvadrat", "To'g'ri chiziq"], "correct": 2}, {"q": "Dastur boshida Ball o'zgaruvchisi 10 ga teng. if Ball>5 then change Ball by 5; if Ball<10 then set Ball to 0 else change Ball by -2. Skript yakunida Ball nechaga teng bo'ladi?", "options": ["15", "13", "0", "10"], "correct": 2}, {"q": "[touching color (#FF0000) ?] bloki qaysi holatda \"True\" (Rost) qiymat qaytaradi?", "options": ["Sahnada qizil rangli obyektga tegsa", "Sichqoncha ko'rsatkichiga tegsa", "Sahna chetiga (edge) tegsa", "Boshqa spritga tegsa"], "correct": 0}, {"q": "Skript: Repeat 5: {Play sound \"Meow\" until done (tovush 1 soniya); Wait 2 seconds}. Ushbu skript jami necha soniya davom etadi?", "options": ["5 soniya", "10 soniya", "15 soniya", "7 soniya"], "correct": 2}, {"q": "Bank serverida \"Priority Queue\" algoritmi ishlaydi. So'rovlar: REQ_01(oddiy, ustuvorlik 3, 10:00:01), REQ_02(xalqaro o'tkazma, ustuvorlik 1, 10:00:02), REQ_03(parol tiklash, ustuvorlik 2, 10:00:03). FIFO va Priority qoidalari birgalikda ishlasa, protsessor so'rovlarni qaysi tartibda bajaradi?", "options": ["REQ_01, REQ_02, REQ_03 (Kelish vaqti bo'yicha)", "REQ_02, REQ_03, REQ_01 (Ustuvorlik darajasi bo'yicha)", "REQ_03, REQ_02, REQ_01", "Barcha so'rovlar bir vaqtda (Parallel) bajariladi"], "correct": 1}, {"q": "O'zbekiston Respublikasining \"Ta'lim to'g'risida\"gi Qonunining (1997-yil tahriri) asosiy maqsadi nima?", "options": ["Faqat oliy ma'lumotli kadrlar tayyorlash", "Fuqarolarga ta'lim-tarbiya berish va bilim olishdan iborat konstitutsiyaviy huquqni ta'minlash", "Maktablarni moddiy-texnika bazasini mustahkamlash", "Xalqaro tashkilotlar bilan hamkorlikni rivojlantirish"], "correct": 1}, {"q": "Ta'lim muassasasiga o'quv va tarbiyaviy ishlarni olib borish huquqi hamda vakolatining berilishi nima deb ataladi?", "options": ["Attestatsiya", "Sertifikatlashtirish", "Akkreditatsiya", "Litsenziyalash"], "correct": 3}, {"q": "Ta'lim muassasasi faoliyatining qonun talablariga muvofiq izchil va tizimli amalga oshirilayotganligini tahlil qilish va baholash jarayoni qaysi?", "options": ["Reyting aniqlash", "Attestatsiya", "Monitoring", "Inspeksiya"], "correct": 1}, {"q": "O'zbekiston Respublikasida ta'lim sohasidagi davlat siyosatining asosiy tamoyillaridan biri noto'g'ri ko'rsatilgan variantni toping:", "options": ["Ta'lim va tarbiya insonparvar, demokratik xarakterda ekanligi", "Ta'lim tizimining diniy xarakterda ekanligi", "Ta'limning uzluksizligi va izchilligi", "Bilimli bo'lishni va iste'dodni rag'batlantirish"], "correct": 1}, {"q": "Davlat ta'lim standartlari (DTS) nimalarni aniqlab beradi?", "options": ["Faqat o'quvchilarning maktabga kelish vaqtini", "Ta'lim dasturlari mazmunining zaruriy minimumi va bitiruvchilarning tayyorgarlik darajasini", "O'qituvchilarning ish haqini miqdorini", "Maktab binosining qurilish loyihasini"], "correct": 1}, {"q": "Quyidagilardan qaysi biri maktabdan tashqari ta'lim muassasalari sirasiga kiradi?", "options": ["Akademik litseylar", "\"Barkamol avlod\" bolalar markazlari", "Kasb-hunar kollejlari", "Bakalavriat bosqichi"], "correct": 1}, {"q": "Oliy ta'limning ikkinchi akademik darajasi bo'lib, aniq mutaxassislik bo'yicha kamida ikki yil davom etadigan bosqich qaysi?", "options": ["Bakalavriat", "Aspirantura", "Magistratura", "Do'ktorantura"], "correct": 2}, {"q": "Oila va mustaqil ravishda ta'lim olgan shaxslarga davlat namunasidagi hujjat berish uchun o'tkaziladigan imtihon tartibi nima deyiladi?", "options": ["Sirtqi ta'lim", "Eksternat", "Masofaviy ta'lim", "Maxsus kurs"], "correct": 1}, {"q": "Xorijiy davlatlarda olingan ta'lim to'g'risidagi hujjatning O'zbekistonda tan olinishi va tenglashtirilishi jarayoni qanday nomlanadi?", "options": ["Legalizatsiya", "Apostil", "Nostrifikatsiya", "Identifikatsiya"], "correct": 2}, {"q": "SMART texnologiyasiga ko'ra ta'lim maqsadi qanday bo'lishi kerak?", "options": ["Umumiy va mavhum", "Faqat o'qituvchiga bog'liq", "Aniq, o'lchanadigan, erishsa bo'ladigan, real va vaqt bilan chegaralangan", "Faqat darslik doirasida"], "correct": 2}]}, {"id": "sertifikat-8", "title": "Attestatsiya mock test — 8-variant", "desc": "Professional Attestatsiya Testi (Expert daraja, 50 ta) · 50 savol", "icon": "🚀", "cls": "c4", "cat": "attestatsiya", "note": null, "questions": [{"q": "O'n oltilik sanoq sistemasidagi AF{16} va sakkizlikdagi 257{8} sonlari yig'indisi ikkilik sanoq sistemasida nechaga teng?", "options": ["110101111{2}", "100010110{2}", "111000110{2}", "101010101{2}"], "correct": 1}, {"q": "x{10} = 125 soni qaysi asosli sanoq sistemasida 201{n} ko'rinishida bo'ladi?", "options": ["n=7", "n=8", "n=9", "n=6"], "correct": 1}, {"q": "Ikkilik sanoq sistemasida amallarni bajaring: 1101(2) x 101(2) - 10011(2)", "options": ["100010(2)", "100110(2)", "110010(2)", "101100(2)"], "correct": 1}, {"q": "Kompyuter xotirasida manfiy sonlarni saqlashda qo'llaniladigan \"qo'shimcha kod\" (two's complement) usulida -5 soni 8 bitda qanday ko'rinishda bo'ladi?", "options": ["11111011", "11111010", "10000101", "11111111"], "correct": 0}, {"q": "1011{x} = 131{10} tenglamadagi x asosni toping.", "options": ["4", "5", "6", "3"], "correct": 2}, {"q": "(JS) Quyidagi kod natijasi nima? console.log(0.1 + 0.2 === 0.3);", "options": ["true", "false", "undefined", "Error"], "correct": 1}, {"q": "(JS) let a = [1, 2]; let b = a; b[0] = 5; console.log(a[0]);", "options": ["1", "5", "undefined", "ReferenceError"], "correct": 1}, {"q": "(JS) console.log(false == '0'); console.log(false === '0');", "options": ["true, true", "true, false", "false, false", "false, true"], "correct": 1}, {"q": "(JS) setTimeout(() => console.log(1), 0); console.log(2);", "options": ["1, 2", "2, 1", "1", "2"], "correct": 1}, {"q": "(JS) const x = [1, 2, 3]; const [y] = x; console.log(y);", "options": ["[1]", "1", "2", "Error"], "correct": 1}, {"q": "(Python) print(all([True, 1, [0]])) natijasi?", "options": ["True", "False", "None", "Error"], "correct": 0}, {"q": "(Python) def f(a, L=[]): L.append(a); return L; print(f(1)); print(f(2));", "options": ["[1], [2]", "[1], [1, 2]", "[1, 2], [1, 2]", "[2], [2]"], "correct": 1}, {"q": "(Python) x = \"abc\"; y = \"abc\"; print(x is y);", "options": ["True", "False", "None", "Error"], "correct": 0}, {"q": "(Python) a = [x for x in range(5) if x % 2 == 0]; print(len(a));", "options": ["2", "3", "5", "0"], "correct": 1}, {"q": "(Python) print(type(1 / 1)) natijasi?", "options": ["<class 'int'>", "<class 'float'>", "<class 'double'>", "Error"], "correct": 1}, {"q": "(C++) int a=5, b=2; float c = a/b; cout << c;", "options": ["2.5", "2", "2.0", "3"], "correct": 1}, {"q": "(Scratch) Sprit markazda (0,0), yo'nalishi 90°. Skript: move 100 steps; turn right 90 degrees; move 50 steps. Bajarilgach qayerda bo'ladi?", "options": ["(100, 50)", "(100, -50)", "(-100, 50)", "(50, 100)"], "correct": 1}, {"q": "(Scratch) \"Broadcast\" xabarini yuborganda qaysi blok uni qabul qiladi?", "options": ["When clicked", "When I receive", "Say", "Wait"], "correct": 1}, {"q": "(Scratch) O'zgaruvchi \"X\" = 10. Repeat 5: change X by X. Natijasi?", "options": ["60", "320", "50", "15"], "correct": 1}, {"q": "(Scratch) Qalam (Pen) bilan kvadrat chizish uchun burchak necha daraja bo'lishi kerak?", "options": ["90", "60", "360", "45"], "correct": 0}, {"q": "(Excel) A1=5, B1=A1^2; A2=10, B2=IF(B1>20;A2*2;A2/2). B2 katak natijasi necha?", "options": ["5", "20", "10", "25"], "correct": 2}, {"q": "(Excel) $C$5 katakdagi formula pastga bir qator surilsa nima bo'ladi?", "options": ["$C$6", "$D$5", "$C$5", "C6"], "correct": 2}, {"q": "(Excel) =SUMPRODUCT({1;2}; {3;4}) natijasi?", "options": ["7", "11", "12", "10"], "correct": 1}, {"q": "(Excel) Xatoni toping: =IF(A1>0, \"Musbat\", \"Manfiy\")", "options": ["Qavs xato", "Vergul o'rniga nuqtali vergul (;) kerak", "Qo'shtirnoq xato", "Xato yo'q"], "correct": 1}, {"q": "(Word) \"Section Break\" va \"Page Break\" orasidagi farq?", "options": ["Farqi yo'q", "Section Break sahifani turli formatda (albom/kitob) qilishga imkon beradi", "Page Break xotirani ko'p yeydi", "Section Break faqat rasm uchun"], "correct": 1}, {"q": "(Word) \"Mail Merge\" (Рассылка) funksiyasi nima uchun?", "options": ["Email yuborish", "Bitta shablon asosida ko'plab shaxsiylashtirilgan hujjatlarni yaratish", "Virusdan himoya", "Matnni tarjima qilish"], "correct": 1}, {"q": "(Word) Mundarija yaratishda \"Level 1\", \"Level 2\" nima orqali belgilanadi?", "options": ["Shrift o'lchami", "Styles (Sarlavha uslublari)", "Rang", "Kursiv"], "correct": 1}, {"q": "(Excel) =MATCH(15; {10; 15; 20}; 0) natijasi?", "options": ["15", "2", "1", "#N/A"], "correct": 1}, {"q": "(Access) \"Validation Rule\" maydoni nima uchun?", "options": ["Parol qo'yish", "Kiritilayotgan ma'lumotni chegaralash (masalan, yosh > 0)", "Rang berish", "Avtomatik hisoblash"], "correct": 1}, {"q": "(Access) Jadvalda \"Lookup Wizard\" vazifasi?", "options": ["Ma'lumot qidirish", "Boshqa jadvaldan qiymatlarni ro'yxat bo'lib tushishini ta'minlash", "Rasmni ko'rsatish", "Bazani o'chirish"], "correct": 1}, {"q": "(Access) SQLda SELECT * FROM Students ORDER BY Age DESC natijasi?", "options": ["Yosh bo'yicha o'sish", "Yosh bo'yicha kamayish", "Faqat ismlar", "Xatolik"], "correct": 1}, {"q": "(Tarmoq) /26 prefiksli tarmoqda nechta foydalanuvchi (host) bo'lishi mumkin?", "options": ["64", "62", "30", "126"], "correct": 1}, {"q": "(Tarmoq) \"Default Gateway\" vazifasi?", "options": ["IP ni nomga aylantirish", "Mahalliy tarmoqdan tashqariga (internetga) chiqish nuqtasi", "Wi-fi paroli", "Antivirus"], "correct": 1}, {"q": "(Tarmoq) DHCP server ishlamay qolsa, Windows qaysi diapazondan IP oladi (APIPA)?", "options": ["192.168.x.x", "169.254.x.x", "127.x.x.x", "10.x.x.x"], "correct": 1}, {"q": "(Algoritm) \"Binary Search\" algoritmi ishlashi uchun asosiy shart nima?", "options": ["Ma'lumot kam bo'lishi", "Ma'lumot saralangan (sorted) bo'lishi", "Ma'lumot matn bo'lishi", "RAM katta bo'lishi"], "correct": 1}, {"q": "(Algoritm) O(n^2) murakkablikdagi algoritmga misol?", "options": ["Binary search", "Bubble sort", "Quick sort", "Linear search"], "correct": 1}, {"q": "A=True, B=False, C=True. (A AND B) OR (NOT B AND C) natijasi?", "options": ["True", "False", "NULL", "Error"], "correct": 0}, {"q": "Qaysi ifoda A AND (B OR C) ga ekvivalent?", "options": ["(A AND B) OR (A AND C)", "(A OR B) AND (A OR C)", "A AND B AND C", "NOT A OR B"], "correct": 0}, {"q": "Agar X OR Y = False bo'lsa, X va Y ning qiymatlari qanday?", "options": ["X=True, Y=False", "X=False, Y=False", "X=True, Y=True", "Noma'lum"], "correct": 1}, {"q": "P => Q (Implikatsiya) qachon yolg'on bo'ladi?", "options": ["P=True, Q=True", "P=True, Q=False", "P=False, Q=True", "P=False, Q=False"], "correct": 1}, {"q": "Shartli operator: if (a > 5 && b < 10) sharti qachon bajariladi?", "options": ["Ikkala shart ham rost bo'lsa", "Bittasi rost bo'lsa", "Ikkalasi ham yolg'on bo'lsa", "a=5 bo'lsa"], "correct": 0}, {"q": "Bloom taksonomiyasida \"Tahlil\" (Analysis) bosqichida o'quvchi nima qiladi?", "options": ["Yod oladi", "Qismlarga ajratib, ichki bog'liqlikni topadi", "Namunadek yechadi", "Baholaydi"], "correct": 1}, {"q": "\"Konstruktivizm\" ta'lim nazariyasining asosi nima?", "options": ["O'quvchi bilimlarni tayyor holda oladi", "O'quvchi bilimlarni o'zi quradi (tajriba orqali)", "Faqat jazo orqali o'qitish", "Darslikni yodlash"], "correct": 1}, {"q": "Flipped Classroom modelida dars vaqti nima bilan band bo'lishi kerak?", "options": ["Ma'ruza tinglash", "Amaliy topshiriqlar va muhokama", "Diktant yozish", "Kitob o'qish"], "correct": 1}, {"q": "Formativ baholashning maqsadi?", "options": ["Choraklik baho qo'yish", "O'quv jarayonini yaxshilash uchun qayta aloqa berish", "Sinfdan qoldirish", "Sertifikat berish"], "correct": 1}, {"q": "SMART maqsad qo'yishda \"A\" (Achievable) nimani anglatadi?", "options": ["Aniqlik", "Erishish mumkinligi", "Vaqtning chegaralanganligi", "Murakkablik"], "correct": 1}, {"q": "O'quvchilarda \"Soft skills\"ni rivojlantirishga qaysi metod ko'proq yordam beradi?", "options": ["Individual test", "Loyiha asosida o'qitish (PBL)", "Kitobdan ko'chirish", "Ma'ruza"], "correct": 1}, {"q": "Informatika darsida \"Inkluziv ta'lim\" deganda nima tushuniladi?", "options": ["Faqat iqtidorli bolalarni o'qitish", "Barcha bolalarni (imkoniyati cheklanganlarni ham) birga o'qitish", "Faqat kompyuterni o'rgatish", "Alohida maktabda o'qitish"], "correct": 1}, {"q": "Metakognitsiya nima?", "options": ["Kompyuter xotirasi", "O'zining fikrlash jarayoni haqida fikrlash (bilishni bilish)", "Ko'p ma'lumot yig'ish", "Internetdagi qidiruv"], "correct": 1}, {"q": "O'quvchi darsda intizomni buzsa, zamonaviy pedagogik yondashuvda birinchi nima qilinadi?", "options": ["Sinfdan haydash", "Sababini aniqlash va muloqot qilish", "Kundaligiga \"2\" qo'yish", "Direktorga olib borish"], "correct": 1}]}, {"id": "sertifikat-9", "title": "Attestatsiya mock test — 9-variant", "desc": "Dasturlash va Algoritmlash (Tezkor Mock, 50 ta) · 50 savol", "icon": "📐", "cls": "c1", "cat": "attestatsiya", "note": null, "questions": [{"q": "Python: data = [i for i in range(10) if i % 2 == 0]; data[1:3] = [10, 20, 30]; print(data[-3])", "options": ["20", "30", "8", "6"], "correct": 0}, {"q": "JavaScript: var x = 10; function test() { console.log(x); var x = 20; } test(); Konsolga nima chiqadi?", "options": ["10", "20", "undefined", "ReferenceError"], "correct": 2}, {"q": "Python: print(math.ceil(-3.1) + math.floor(2.9))", "options": ["-1", "-2", "0", "1"], "correct": 3}, {"q": "JavaScript: let a = {val: 1}; let b = a; b.val++; let c = Object.assign({}, a); c.val++; console.log(a.val, c.val);", "options": ["1 2", "2 2", "2 3", "3 3"], "correct": 2}, {"q": "Python: d = {1: \"A\", 2: \"B\"}; res = d.get(3, d.get(1, \"C\")); print(res)", "options": ["A", "B", "C", "None"], "correct": 0}, {"q": "C++: int x = 5; int *p = &x; *p = *p * 2; int y = x++; x ning yakuniy qiymati necha bo'ladi?", "options": ["5", "10", "11", "12"], "correct": 2}, {"q": "Saralangan massivdan elementni qidirishda eng samarali algoritmning vaqt murakkabligi (worst case) qaysi?", "options": ["O(n)", "O(log n)", "O(n log n)", "O(1)"], "correct": 1}, {"q": "JavaScript: console.log([] == ![]); Natijani toping.", "options": ["true", "false", "undefined", "TypeError"], "correct": 0}, {"q": "Python: func = lambda x: x[::-1]; data = [\"abc\", \"123\"]; print(list(map(func, data))[0][1])", "options": ["a", "b", "c", "2"], "correct": 1}, {"q": "Algoritm: def f(n): if n <= 1: return 1; return n + f(n-2). f(4) qiymati bilan chaqirilsa, natija necha bo'ladi?", "options": ["4", "5", "7", "10"], "correct": 2}, {"q": "A1=10; A2=20; A3=30 bo'lsa: =IF(AND(A1<A2; A3/A1=3); SUM(A1:A3); AVERAGE(A1:A3)) natijasini toping.", "options": ["20", "30", "60", "15"], "correct": 2}, {"q": "Hujjatning 5-betidan boshlab sahifa orientatsiyasini \"Kitob\" (Portrait) ko'rinishidan \"Albom\" (Landscape) ko'rinishiga o'zgartirish uchun qaysi amal bajarilishi shart?", "options": ["Page Break qo'yish", "Section Break (Next Page) qo'yish", "Sahifa chetlarini (Margins) toraytirish", "Faqat matnni belgilab \"Landscape\" tanlash"], "correct": 1}, {"q": "A1 katakda \"Attestatsiya-2026\" yozilgan bo'lsa, =LEFT(RIGHT(A1; 4); 2) formulasi natijasi nima bo'ladi?", "options": ["20", "20 (Matn ko'rinishida)", "26", "At"], "correct": 0}, {"q": "B2 katakda =$A2+B$1 formulasi yozilgan. Ushbu katakni C3 katakka nusxalasak, formula qanday ko'rinishga keladi?", "options": ["=$A3+C$2", "=$A3+C$1", "=$A2+B$1", "=$B3+C$1"], "correct": 1}, {"q": "Taqdimot namoyish etilayotgan vaqtda (Slide Show), ma'lum bir slayddan so'ng darhol qora ekranni chiqarish uchun klaviaturadagi qaysi tugma bosiladi?", "options": ["W", "B", "S", "Esc"], "correct": 1}, {"q": "A1=5 bo'lsa, quyidagi formula natijasini aniqlang: =OR(A1>10; AND(A1<10; A1<>0))", "options": ["FALSE", "TRUE", "0", "#VALUE!"], "correct": 1}, {"q": "Word dasturida \"Tab\" tugmasi ro'yxat bilan ishlashda qanday vazifani bajaradi?", "options": ["Ro'yxat darajasini bir pog'ona ichkariga suradi", "Ro'yxatni o'chiradi", "Yangi tartib raqami qo'shadi", "Ro'yxat darajasini bir pog'ona tashqariga suradi"], "correct": 0}, {"q": "Excelda A1:C3 va B2:D4 diapazonlarining kesishmasi (intersection) qaysi javobda to'g'ri ko'rsatilgan?", "options": ["A1:D4", "B2:C3", "B2:C3", "A1:B2"], "correct": 1}, {"q": "Word hujjatida biror so'zga giperhavola berilganda, klaviaturaning qaysi tugmasi bosib turilsa, havola bo'yicha o'tish mumkin bo'ladi?", "options": ["Alt", "Shift", "Ctrl", "Fn"], "correct": 2}, {"q": "Berilgan jadvalda: A1=10, A2=15, A3=20, A4=25. =COUNTIF(A1:A4; \">=15\") - COUNTIF(A1:A4; \">20\") natijasi necha?", "options": ["1", "2", "3", "4"], "correct": 1}, {"q": "Scratch: Sprit markazda (0,0) turibdi. 1.Yo'nalishni 90° ga o'zgartir; 2.80 qadam yur; 3.Chapga 90° buril; 4.50 qadam yur. Spritning oxirgi koordinatasi qanday bo'ladi?", "options": ["(80, 50)", "(50, 80)", "(80, -50)", "(50, -80)"], "correct": 2}, {"q": "Quyidagi IP manzillardan qaysi biri texnik jihatdan noto'g'ri yozilgan?", "options": ["192.168.1.1", "10.0.0.255", "172.16.256.1", "8.8.8.8"], "correct": 2}, {"q": "A = \"Bugun dars bor\", B = \"Havo quyoshli\". \"Bugun dars bo'lishi uchun havo quyoshli bo'lishi shart emas\" degan fikr mantiqiy formulada qanday ifodalanadi?", "options": ["A /\\ B", "A v ¬B", "A -> B", "A \\/ B"], "correct": 1}, {"q": "Scratch: Sprit markazda (0,0) turibdi. Hisob=0; 5 marta takrorla: agar hisob<3 bo'lsa -> hisob=hisob+2, aks holda -> hisob=hisob+1. 5 marta takrorlashdan so'ng hisob qiymati nechaga teng bo'ladi?", "options": ["6", "8", "9", "10"], "correct": 2}, {"q": "Tarmoq darajasida (Network Layer) asosiy ishlaydigan qurilma va protokol juftligini toping.", "options": ["Router - IP", "Switch - MAC", "Hub - HTTP", "Modem - Ethernet"], "correct": 0}, {"q": "Agar \"OLMA = 41\", \"ANOR = 44\" bo'lsa, \"BEHI = ?\" (Mantiq: ASCII jadvali orqali hisoblandi)", "options": ["32", "34", "40", "28"], "correct": 1}, {"q": "Scratchda \"qachonki men nusxa sifatida boshlasam\" (When I start as a clone) blogi bajarilganda, qaysi o'zgaruvchi har bir nusxa uchun alohida (unique) qiymatga ega bo'lishi mumkin?", "options": ["\"Barcha spritlar uchun\" deb yaratilgan o'zgaruvchi", "\"Faqat shu sprit uchun\" deb yaratilgan o'zgaruvchi", "Global ro'yxat (List)", "Faqat \"Sensing\" blokidagi taymer"], "correct": 1}, {"q": "https://kun.uz/news/main manzilida top-level domain (yuqori darajali domen) qaysi?", "options": ["https", "kun", "uz", "news"], "correct": 2}, {"q": "Sinfda 30 ta o'quvchi bor. 20 tasi dasturlashni, 15 tasi grafikani biladi. 5 tasi ikkalasini ham bilmasa, necha kishi ham dasturlash, ham grafikani biladi?", "options": ["10", "5", "15", "8"], "correct": 0}, {"q": "Spritni boshqa barcha spritlarning ustiga chiqarish uchun qaysi blok ishlatiladi?", "options": ["Go to front layer", "Go to back layer", "Change size by 10", "Move 10 steps"], "correct": 0}, {"q": "Bir tomonlama shifrlash (qaytarib bo'lmaydigan) algoritmi qanday nomlanadi?", "options": ["AES", "RSA", "Hashing (Xeshlar)", "DES"], "correct": 2}, {"q": "\"Choy damlash\" algoritmining mantiqiy ketma-ketligini toping: 1.Choynakka choy solish; 2.Suv qaynatish; 3.Dam yeyishi uchun kutish; 4.Qaynagan suvni quyish.", "options": ["1-2-3-4", "2-1-4-3", "2-4-1-3", "1-4-2-3"], "correct": 1}, {"q": "HTMLda jadvalning ikki yoki undan ortiq ustunini birlashtirish uchun qaysi atribut ishlatiladi?", "options": ["rowspan", "colspan", "merge", "align"], "correct": 1}, {"q": "CSS: #main{color:red;} .text{color:blue;} p{color:green;}. <p class=\"text\" id=\"main\"> tegining rangi qanday bo'ladi?", "options": ["Qizil (red)", "Ko'k (blue)", "Yashil (green)", "Qora (black)"], "correct": 0}, {"q": "Access jadvali \"Savdo\": Olma 4000x5, chegirma 10%; Anor 6000x3, chegirma 20%; Behi 5000x4, chegirma 15%; Nok 3500x6, chegirma 5%. Yakuniy qiymat = (Narx*Soni) - Chegirma miqdori. Qaysi mahsulotning yakuniy qiymati eng katta?", "options": ["Olma", "Anor", "Behi", "Nok"], "correct": 0}, {"q": "1011(2) + 22(8) yig'indisini o'nlik sanoq sistemasida toping.", "options": ["25", "29", "31", "33"], "correct": 2}, {"q": "Foydalanuvchiga bir nechta variantdan faqat bittasini tanlash imkonini beruvchi shakl (form) elementi qaysi?", "options": ["<input type=\"checkbox\">", "<input type=\"radio\">", "<input type=\"text\">", "<input type=\"submit\">"], "correct": 1}, {"q": "Access jadvali \"Savdo\" (Olma,Anor,Behi,Nok narx/soni bilan). SELECT Mahsulot FROM Savdo WHERE Narx*Soni = (SELECT MAX(Narx*Soni) FROM Savdo); Qaysi mahsulotni beradi?", "options": ["Olma", "Anor", "Behi", "Nok"], "correct": 0}, {"q": "CSSda elementning chegarasi (border) va uning ichidagi kontent orasidagi masofa nima deyiladi?", "options": ["Margin", "Padding", "Outline", "Float"], "correct": 1}, {"q": "Berilgan A = [12, 7, 19, 4, 15] massivda eng kichik elementni topish algoritmi necha marta solishtirish (comparison) amalini bajaradi?", "options": ["3", "4", "5", "6"], "correct": 1}, {"q": "\"To'ntarilgan sinf\" metodikasining asosiy mazmuni qaysi javobda to'g'ri ko'rsatilgan?", "options": ["O'qituvchi va o'quvchi rollari almashadi", "Nazariy bilim uyda o'zlashtiriladi, amaliy topshiriqlar esa darsda bajariladi", "Dars faqat kompyuter o'yinlari orqali o'tiladi", "Baholash tizimi 5 ballikdan 100 ballikka o'zgartiriladi"], "correct": 1}, {"q": "Informatika darsida murakkab algoritmni o'rganishda o'quvchi avvalgi darsdagi bilimlari bilan yangi tushunchani bog'laydi. Bu qaysi jarayonga misol bo'ladi?", "options": ["Akkomodatsiya", "Assimilyatsiya", "Adaptatsiya", "Abstraktsiya"], "correct": 1}, {"q": "SMART maqsad qo'yish tizimidagi \"R\" harfi nimani anglatadi?", "options": ["Realistic (Real) yoki Relevant (Muvofiq)", "Realistic (Real) yoki Relevant (Muvofiq)", "Rapid (Tezkor)", "Result (Natija)"], "correct": 0}, {"q": "O'quvchining bilim olishidagi bo'shliqlarni aniqlash va ularni bartaraf etish uchun dars jarayonida o'tkaziladigan baholash turi qaysi?", "options": ["Summativ baholash", "Formativ baholash", "Diagnostik baholash", "Normativ baholash"], "correct": 1}, {"q": "Murakkab dasturlash kodini o'rgatishda o'qituvchi avval oddiy \"Hello World\" dan boshlab, keyin murakkab sikllarga o'tishi qaysi tamoyilga mos keladi?", "options": ["Ko'rgazmalilik", "Oddiydan murakkabga", "Ilmiylik", "Tizimlilik"], "correct": 1}, {"q": "Informatika darsida \"Algoritm\" mavzusi bo'yicha \"Sinkveyn\" tuzish topshirig'i berildi. Bu metod o'quvchida qaysi ko'nikmani shakllantiradi?", "options": ["Tushunchani qisqa va lo'nda xulosalash", "Kod yozish tezligini oshirish", "Guruhda janjallashmaslik", "Matematik hisoblash"], "correct": 0}, {"q": "Inklyuziv ta'limning bosh maqsadi nima?", "options": ["Iqtidorli bolalarni alohida o'qitish", "Imkoniyati cheklangan bolalarni sog'lom tengdoshlari bilan birga o'qitish", "Faqat masofaviy ta'limni rivojlantirish", "Xorijiy tillarni majburiy o'rgatish"], "correct": 1}, {"q": "Bloom taksonomiyasining eng yuqori bosqichi (yangi tahrirda) qaysi?", "options": ["Tushunish", "Tahlil", "Yaratish (Create)", "Qo'llash"], "correct": 2}, {"q": "\"Dasturiy ta'minotdagi xatolikni bartaraf etish uchun muammoli vaziyatni tahlil qilish\" topshirig'i qaysi metodga kiradi?", "options": ["Ma'ruza", "Keys-stadi", "Sokrat suhbati", "Laboratoriya ishi"], "correct": 1}, {"q": "O'quvchi darsda xato javob bersa, o'qituvchining eng to'g'ri reaktsiyasi qaysi?", "options": ["\"Nol\" qo'yib, joyiga o'tqizish", "Boshqa o'quvchilarga uni ustidan kulishga ruxsat berish", "Xatoni tushuntirib, to'g'ri javobga yo'naltirish", "Savolni e'tiborsiz qoldirish"], "correct": 2}]}, {"id": "sertifikat-10", "title": "Attestatsiya mock test — 10-variant", "desc": "Attestatsiya va Pedagogika Tezkor (50 ta) · 50 savol", "icon": "⚙️", "cls": "c2", "cat": "attestatsiya", "note": null, "questions": [{"q": "JavaScript: const a = [1, 2, 3]; const b = a; b.push(4); const c = [...a]; c.pop(); console.log(a.length, c.length);", "options": ["3 3", "4 4", "4 3", "3 4"], "correct": 2}, {"q": "JavaScript: function outer(){ let count=0; return function(){ count++; return count; }; } const counter1=outer(); const counter2=outer(); counter1(); console.log(counter1() + counter2());", "options": ["2", "3", "4", "NaN"], "correct": 1}, {"q": "JavaScript: console.log(0 || \"Ustoz\" && null || 2026);", "options": ["0", "\"Ustoz\"", "null", "2026"], "correct": 3}, {"q": "Python: keys=[1,2,3]; d=dict.fromkeys(keys,[]); d[1].append(\"A\"); print(d[2])", "options": ["[\"A\"]", "[]", "[None]", "KeyError"], "correct": 0}, {"q": "Python: s1={1,2,3,4}; s2={3,4,5,6}; res=(s1^s2)|(s1&s2); print(len(res))", "options": ["2", "4", "6", "8"], "correct": 2}, {"q": "Python: def f(n,k): if k==0 or k==n: return 1; return f(n-1,k-1)+f(n-1,k). f(5,2) qiymatlari bilan chaqirilsa, natija necha bo'ladi?", "options": ["5", "10", "15", "20"], "correct": 1}, {"q": "import math; res = math.sqrt(16) * math.pow(2, -1). Natijasini va tipini aniqlang:", "options": ["2 (int)", "2.0 (float)", "4.0 (float)", "1.0 (float)"], "correct": 1}, {"q": "Python: points=[(1,5),(3,2),(2,8)]; res=sorted(points, key=lambda x: x[1]); print(res[0][0])", "options": ["1", "2", "3", "5"], "correct": 2}, {"q": "Scratch: Sprit (0,0) nuqtada, yo'nalishi 0 gradus. yo'nalishni 90 ga o'zgartir -> 100 qadam yur -> o'ngga 90 daraja buril -> 50 qadam yur. Koordinatalari qanday bo'ladi?", "options": ["(100, 50)", "(100, -50)", "(-100, 50)", "(50, 100)"], "correct": 1}, {"q": "Scratch: X ni 10 ga tenglang; Y ni 20 ga tenglang; X ni (X+Y) ga o'zgartiring; Y ni (X-Y) ga o'zgartiring; Natija ni (Y) ga tenglang. \"Natija\" nechaga teng?", "options": ["30", "10", "20", "0"], "correct": 1}, {"q": "Scratch: agar (sichqoncha tugmasi bosilgan) VA (klaviaturadagi \"bo'shliq\" tugmasi bosilgan) EMAS bo'lsa. Qaysi holatda True qaytaradi?", "options": ["Faqat sichqoncha bosilganda va probel bosilmaganda", "Ikkala tugma ham bosilganda", "Faqat probel bosilganda", "Sichqoncha bosilmaganda"], "correct": 0}, {"q": "Spritda: Yashil bayroq bosilsa -> 5 marta takrorla (o'zimning nusxamni yarat). Nusxa qismida: men nusxa sifatida boshlasam -> 2 marta takrorla (o'zimning nusxamni yarat). Yashil bayroq bir marta bosilganda jami nechta nusxa hosil bo'ladi?", "options": ["5 ta", "10 ta", "15 ta", "20 ta"], "correct": 2}, {"q": "Skript: 10 marta takrorla: 100 qadam yur; 100 qadam orqaga yur; o'ngga 36 daraja buril. Sprit sahnada qanday shakl chizadi (qalam pastga tushirilgan)?", "options": ["Kvadrat", "O'n burchak", "Yulduzsimon \"quyosh\" (markazdan chiquvchi chiziqlar)", "Aylana"], "correct": 2}, {"q": "Hujjatning strukturasi (boblar, sarlavhalar iyerarxiyasi) bilan ishlash va ularning o'rnini tezkor almashtirish uchun eng qulay rejim qaysi?", "options": ["Print Layout", "Web Layout", "Outline", "Read Mode"], "correct": 2}, {"q": "Word dasturida jadval bo'lmagan oddiy matnli ro'yxatni (masalan, familiyalar) alifbo tartibida saralash mumkinmi?", "options": ["Yo'q, faqat jadvallarda mumkin", "Ha, \"Paragraphs\" bo'yicha saralash funksiyasi orqali", "Ha, faqat ularni avval Excelga ko'chirib o'tkazish shart", "Yo'q, Wordda saralash funksiyasi mavjud emas"], "correct": 1}, {"q": "Hujjat ichidagi biror rasmga \"1.2-rasmga qarang\" kabi avtomatik yangilanadigan havola qo'yish uchun qaysi menyudan foydalaniladi?", "options": ["Insert -> Hyperlink", "References -> Cross-reference", "Design -> Watermark", "Layout -> Hyphenation"], "correct": 1}, {"q": "\"Find and Replace\" oynasida barcha \"Informatika\" so'zlarini qalin (Bold) ko'rinishga keltirish mumkinmi?", "options": ["Ha, \"More\" -> \"Format\" tugmasi orqali almashtiriladigan so'zga format berish mumkin", "Yo'q, Replace faqat matnni matnga almashtiradi", "Ha, lekin faqat bitta-bitta almashtirish mumkin", "Yo'q, buning uchun makros yozish kerak"], "correct": 0}, {"q": "Hujjatning birinchi sahifasiga raqam qo'ymaslik, lekin ikkinchi sahifadan \"2\" raqami bilan davom ettirish qanday amalga oshiriladi?", "options": ["Ikkita alohida fayl yaratish orqali", "Page Break qo'shish orqali", "\"Different First Page\" parametrini yoqish orqali", "Sahifa raqamini qo'lda yozib chiqish orqali"], "correct": 2}, {"q": "Wordda \"Styles\" (Stillar) dan foydalanishning asosiy afzalligi nima?", "options": ["Matnni chiroyli rangga bo'yash", "Avtomatik mundarija (Table of Contents) hosil qilish imkoniyati", "Fayl hajmini kamaytirish", "Imlo xatolarini avtomatik tuzatish"], "correct": 1}, {"q": "\"Find\" oynasida \"Use wildcards\" yoqilgan bo'lsa, b?t so'rovi qaysi so'zni topadi?", "options": ["boot", "bat", "bought", "boat"], "correct": 1}, {"q": "A1:A3 diapazonda {1;2;3} sonlari berilgan. =SUM(A1:A3*2) formulasi Ctrl+Shift+Enter bilan kiritilsa natija necha bo'ladi?", "options": ["6", "8", "12", "#VALUE!"], "correct": 2}, {"q": "=VLOOKUP(\"Olma\"; A1:C10; 3; 0) formulasidagi oxirgi 0 parametri nimani anglatadi?", "options": ["Qidiruvni 0-qatordan boshlash", "Aynan o'xshash qiymatni topish (Exact match)", "Taxminiy o'xshash qiymatni topish", "Natija topilmasa 0 chiqarish"], "correct": 1}, {"q": "Agar katakda #DIV/0! xatosi chiqsa, buni oldini olish uchun qaysi funksiyadan foydalanish tavsiya etiladi?", "options": ["ISNUMBER", "IFERROR", "COUNTIF", "LOOKUP"], "correct": 1}, {"q": "A1=5, A2=\"Kitob\", A3=10, A4=TRUE. =COUNT(A1:A4) funksiyasi natijasi necha bo'ladi?", "options": ["4", "3", "2", "1"], "correct": 2}, {"q": "Excelning qaysi bo'limi orqali kerakli natijaga erishish uchun formula tarkibidagi argumentning qiymatini avtomatik hisoblab topish mumkin?", "options": ["Data Validation", "Data -> What-If Analysis -> Goal Seek", "Conditional Formatting", "Pivot Table"], "correct": 1}, {"q": "Access jadvalida \"Telefon raqami\" maydoniga faqat +998-90-123-45-67 ko'rinishidagi ma'lumotlarni kiritishni majburiy qilish uchun qaysi xususiyatdan foydalaniladi?", "options": ["Required", "Validation Rule", "Input Mask", "Default Value"], "correct": 2}, {"q": "Students jadvalidagi talabalarni avval familiyasi bo'yicha (alifbo tartibida), so'ngra yoshi bo'yicha (kamayish tartibida) chiqarish uchun qaysi so'rov to'g'ri?", "options": ["SELECT * FROM Students SORT BY LastName, Age DESC", "SELECT * FROM Students ORDER BY LastName ASC, Age DESC", "SELECT * FROM Students ORDER BY LastName, Age LIMIT", "SELECT * FROM Students GROUP BY LastName, Age"], "correct": 1}, {"q": "\"O'qituvchilar\" va \"Sinf rahbarligi\" jadvallari o'rtasida qanday munosabat turi o'rnatiladi (agar bir o'qituvchi faqat bitta sinfga rahbarlik qila olsa va bir sinfning faqat bitta rahbari bo'lsa)?", "options": ["One-to-One (Birga-bir)", "One-to-Many (Birga-ko'p)", "Many-to-Many (Ko'pga-ko'p)", "Munosabat o'rnatib bo'lmaydi"], "correct": 0}, {"q": "Ismi \"A\" harfi bilan boshlanadigan barcha xodimlarni topish uchun WHERE qismida nima yoziladi?", "options": ["WHERE Name = 'A*'", "WHERE Name IN ('A')", "WHERE Name LIKE 'A%'", "WHERE Name IS 'A%'"], "correct": 2}, {"q": "Jadvalda \"Narxi\" va \"Soni\" maydonlari bor. \"Jami\" maydonida ularning ko'paytmasini chiqarish uchun qaysi turdagi maydon yaratiladi?", "options": ["Lookup Wizard", "Calculated", "Attachment", "OLE Object"], "correct": 1}, {"q": "Elektron pochta xabarlarini serverdan foydalanuvchi kompyuteriga yuklab olish (download) uchun qaysi protokol xizmat qiladi?", "options": ["SMTP", "POP3", "FTP", "SNMP"], "correct": 1}, {"q": "IP manzili 192.168.10.15 va tarmoq maskasi 255.255.255.0 bo'lsa, ushbu tarmoqning manzili (Network Address) qaysi?", "options": ["192.168.10.0", "192.168.10.255", "192.168.0.0", "192.168.10.1"], "correct": 0}, {"q": "\"Agar dars tayyorlasam (A), imtihondan o'taman (B)\" mulohazasi qaysi holatda yolg'on bo'ladi?", "options": ["Dars tayyorlamadi va imtihondan o'tmadi", "Dars tayyorladi va imtihondan o'tdi", "Dars tayyorladi, lekin imtihondan o'tmadi", "Dars tayyorlamadi, lekin imtihondan o'tdi"], "correct": 2}, {"q": "X=10, Y=20 bo'lganda quyidagi mantiqiy ifoda natijasini toping: NOT(X > 15) AND (Y / X == 2)", "options": ["TRUE", "FALSE", "1", "Error"], "correct": 0}, {"q": "30 ta dasturchidan 18 tasi Pythonni, 15 tasi JavaScriptni biladi. 5 tasi ikkala tilni ham bilsa, necha kishi bu tillarning hech birini bilmaydi?", "options": ["0", "2", "5", "7"], "correct": 1}, {"q": "\"USTOZ\" so'zi \"VTUP^\" (har bir harf alifboda bitta surilgan) deb shifrlangan bo'lsa, \"BAXT\" so'zi qanday shifrlanadi?", "options": ["CBXU", "CBYU", "ACWS", "DBZV"], "correct": 1}, {"q": "Shaxmat taxtasida e2 katagida turgan \"Fil\" (Bishop) bir yurishda qaysi katakka o'ta olmaydi?", "options": ["a6", "h5", "e5", "b5"], "correct": 2}, {"q": "C:\\Darslar\\Informatika\\Test.docx yo'lida Informatika nima deb ataladi?", "options": ["Ildiz katalog", "Joriy fayl joylashgan papka (katalog)", "Fayl kengaytmasi", "Mantiqiy disk"], "correct": 1}, {"q": "Klaster hajmi 4 KB bo'lgan diskda, hajmi 1 KB bo'lgan 10 ta matnli fayl saqlansa, diskdan jami qancha joy band qilinadi?", "options": ["10 KB", "40 KB", "4 KB", "1 KB"], "correct": 1}, {"q": "Quyidagi formatlardan qaysi biri arxivlangan fayllarni anglatadi?", "options": [".mp4, .avi", ".zip, .rar", ".exe, .msi", ".docx, .txt"], "correct": 1}, {"q": "\"Bumerang\" texnologiyasining dars jarayonidagi asosiy maqsadi nima?", "options": ["O'quvchilarni faqat yakka tartibda ishlashga o'rgatish", "Tarqatilgan materialni o'quvchilar tomonidan mustaqil o'rganib, guruhlarda bir-biriga tushuntirib berishi", "O'qituvchi tomonidan mavzuni savol-javob orqali mustahkamlash", "Dars oxirida o'quvchilarni test orqali baholash"], "correct": 1}, {"q": "O'quvchi informatika fanini faqat \"yaxshi baho olish va ota-onasini xursand qilish\" uchun o'qisa, bu qanday motivatsiyaga misol bo'ladi?", "options": ["Ichki (Inherent) motivatsiya", "Tashqi (Extrinsic) motivatsiya", "Tabiiy motivatsiya", "Kasbiy motivatsiya"], "correct": 1}, {"q": "Klaster metodining asosiy pedagogik vazifasi nimadan iborat?", "options": ["O'quvchining chizish qobiliyatini rivojlantirish", "Mavzuni qismlarga bo'lib yodlash", "Muayyan tushuncha atrofida fikrlarni tizimlashtirish va bog'liqliklarni topish", "O'quvchilar orasida musobaqa o'tkazish"], "correct": 2}, {"q": "Dasturlash darsida o'qituvchi kodning ishlash jarayonini videorolik yoki animatsiya orqali ko'rsatib berishi qaysi tamoyilga ko'proq mos keladi?", "options": ["Ilmiylik tamoyili", "Ko'rgazmalilik tamoyili", "Faollik tamoyili", "Tizimlilik tamoyili"], "correct": 1}, {"q": "O'quvchi berilgan murakkab algoritmni tarkibiy qismlarga ajratib, uning xatolarini topsa va ishlash prinsipini tushuntirsa, Bloom taksonomiyasining qaysi darajasida bo'ladi?", "options": ["Bilish", "Qo'llash", "Tahlil (Analysis)", "Baholash"], "correct": 2}, {"q": "PISA xalqaro baholash dasturi o'quvchilarning asosan qaysi ko'nikmasini baholaydi?", "options": ["Darslikdagi qoidalarni yod olganlik darajasini", "Egallagan bilimlarini hayotiy vaziyatlarda qo'llash qobiliyatini (savodxonlikni)", "Faqat matematika va ona tilidan bilimlarni", "Kompyuterda yozish tezligini"], "correct": 1}, {"q": "\"FSMU\" (Fikr, Sabab, Misol, Umumlashtirish) metodi o'quvchida qaysi ko'nikmani shakllantirishga xizmat qiladi?", "options": ["Xotirani kuchaytirishga", "O'z fikrini asoslash va mantiqiy isbotlashga", "Matnni tez o'qishga", "Axborotni shifrlashga"], "correct": 1}, {"q": "\"Aralash ta'lim\" (Blended Learning) modelining mohiyati nimada?", "options": ["Bir vaqtning o'zida ikkita fanni o'tish", "An'anaviy sinf ta'limini masofaviy (onlayn) ta'lim texnologiyalari bilan uyg'unlashtirish", "Faqat darsliklardan foydalanish", "Ota-onalar bilan birga dars o'tish"], "correct": 1}, {"q": "O'qituvchining o'quvchilar bilan hamkorlikda ishlashi, ularning fikrini tinglashi va qaror qabul qilishda hisobga olishi qaysi uslubga kiradi?", "options": ["Demokratik uslub", "Avtoritar uslub", "Liberal (Laissez-faire) uslub", "Konservativ uslub"], "correct": 0}, {"q": "\"BBB\" (Bilaman, Bildim, Bilishni xohlayman) jadvali darsning qaysi bosqichlarida qo'llaniladi?", "options": ["Faqat darsning boshida", "Faqat darsning oxirida", "Darsning boshidan oxirigacha (yangi mavzuni o'zlashtirish monitoringi uchun)", "Faqat uy vazifasini tekshirishda"], "correct": 2}]}];
+
+/* =========================================================
+   BEST SCORES (localStorage)
+   ========================================================= */
+const SCORES_KEY = "attestatsiya2026_best_scores_v2";
+function loadBestScores(){
+  try{ return JSON.parse(localStorage.getItem(SCORES_KEY)) || {}; }catch(e){ return {}; }
+}
+function saveBestScore(quizId, pct){
+  const scores = loadBestScores();
+  if(scores[quizId] === undefined || pct > scores[quizId]) scores[quizId] = pct;
+  localStorage.setItem(SCORES_KEY, JSON.stringify(scores));
+}
+function overallBest(){
+  const scores = loadBestScores();
+  const vals = Object.values(scores);
+  if(!vals.length) return null;
+  return Math.round(vals.reduce((a,b)=>a+b,0) / vals.length);
+}
+
+/* =========================================================
+   HOME RENDER
+   ========================================================= */
+let activeCat = 'all';
+
+function fmtCount(n){ return String(n).padStart(2,'0'); }
+
+function renderSection(cat, containerId){
+  const scores = loadBestScores();
+  const container = document.getElementById(containerId);
+  container.innerHTML = '';
+  const list = QUIZZES.filter(q => q.cat === cat);
+  list.forEach((quiz) => {
+    const globalIdx = QUIZZES.indexOf(quiz);
+    const row = document.createElement('div');
+    row.className = 'ticket';
+    row.onclick = () => startQuiz(globalIdx);
+    const best = scores[quiz.id];
+    let sealHtml;
+    if(best !== undefined){
+      const cls = best >= 80 ? 'good' : (best >= 50 ? 'mid' : 'low');
+      sealHtml = `<div class="seal ${cls}">${best}%</div>`;
+    } else {
+      sealHtml = `<div class="seal empty">Yechilmagan</div>`;
+    }
+    row.innerHTML = `
+      <div class="ticket-num">${fmtCount(list.indexOf(quiz)+1)}</div>
+      <div class="ticket-body">
+        <h3>${quiz.title}</h3>
+        <p>${quiz.desc}</p>
+        <div class="ticket-meta"><span>${quiz.questions.length} savol</span><span class="dot">·</span><span>40 s/savol</span></div>
+      </div>
+      <div class="ticket-side">
+        ${sealHtml}
+        <button class="btn-start" onclick="event.stopPropagation(); startQuiz(${globalIdx})">Boshlash →</button>
+      </div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function renderHome(){
+  renderSection('attestatsiya', 'grid-attestatsiya');
+  renderSection('mavzuviy', 'grid-mavzuviy');
+  const best = overallBest();
+  document.getElementById('stat-best').textContent = best === null ? '—' : best + '%';
+  applyCatFilter();
+}
+
+function applyCatFilter(){
+  const secA = document.getElementById('section-attestatsiya');
+  const secM = document.getElementById('section-mavzuviy');
+  if(activeCat === 'all'){ secA.classList.remove('hidden'); secM.classList.remove('hidden'); }
+  else if(activeCat === 'attestatsiya'){ secA.classList.remove('hidden'); secM.classList.add('hidden'); }
+  else { secA.classList.add('hidden'); secM.classList.remove('hidden'); }
+}
+
+document.querySelectorAll('#cat-tabs .tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#cat-tabs .tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeCat = btn.dataset.cat;
+    applyCatFilter();
+  });
+});
+
+renderHome();
+showScreen('auth-screen');
+
+document.getElementById('login-input').addEventListener('keydown', (e) => {
+  if(e.key === 'Enter') handleLogin();
+});
+document.getElementById('password-input').addEventListener('keydown', (e) => {
+  if(e.key === 'Enter') handleLogin();
+});
+
+/* =========================================================
+   STATE
+   ========================================================= */
+let activeQuizIdx = null;
+let currentQ = 0;
+let score = 0;
+let answers = [];
+let timerInterval = null;
+let timeLeft = 40;
+const TIME_LIMIT = 40;
+
+function handleLogin(){
+  const login = document.getElementById('login-input').value.trim();
+  const password = document.getElementById('password-input').value.trim();
+  const errorBox = document.getElementById('auth-error');
+
+  if(login === 'ATT2026' && password === 'att123'){
+    errorBox.textContent = '';
+    showScreen('home-screen');
+  } else {
+    errorBox.textContent = 'Login yoki parol xato. Iltimos, maʼlumotlarni tekshiring.';
+  }
+}
+
+function showScreen(id){
+  ['auth-screen','home-screen','quiz-screen','result-screen'].forEach(s=>{
+    document.getElementById(s).classList.toggle('hidden', s !== id);
+  });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function goHome(){
+  clearInterval(timerInterval);
+  renderHome();
+  showScreen('home-screen');
+}
+
+function startQuiz(idx){
+  activeQuizIdx = idx;
+  currentQ = 0;
+  score = 0;
+  answers = [];
+  const quiz = QUIZZES[idx];
+  document.getElementById('quiz-title-active').textContent = quiz.title;
+  document.getElementById('quiz-desc-active').textContent = quiz.desc;
+  const noteBox = document.getElementById('quiz-note');
+  if(quiz.note){
+    noteBox.textContent = quiz.note;
+    noteBox.classList.remove('hidden');
+  } else {
+    noteBox.classList.add('hidden');
+  }
+  showScreen('quiz-screen');
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const quiz = QUIZZES[activeQuizIdx];
+  const q = quiz.questions[currentQ];
+
+  document.getElementById('q-chip').textContent = `${currentQ+1}-savol / ${quiz.questions.length}`;
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('progress-label').textContent = `Savol ${currentQ+1} / ${quiz.questions.length}`;
+  document.getElementById('score-label').textContent = `Ball: ${score}`;
+  document.getElementById('progress-fill').style.width = `${(currentQ/quiz.questions.length)*100}%`;
+  document.getElementById('feedback').textContent = '';
+  document.getElementById('feedback').className = 'feedback-line';
+  document.getElementById('next-btn').disabled = true;
+
+  const optWrap = document.getElementById('options');
+  optWrap.innerHTML = '';
+  const labels = ['A','B','C','D'];
+  q.options.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'opt';
+    div.innerHTML = `<span class="lab">${labels[i]}</span><span>${opt}</span>`;
+    div.onclick = () => selectAnswer(i);
+    optWrap.appendChild(div);
+  });
+
+  startTimer();
+}
+
+function startTimer(){
+  clearInterval(timerInterval);
+  timeLeft = TIME_LIMIT;
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    timeLeft--;
+    updateTimerDisplay();
+    if(timeLeft <= 0){
+      clearInterval(timerInterval);
+      lockAnswer(-1, true);
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay(){
+  document.getElementById('timer-num').textContent = timeLeft;
+  const dot = document.getElementById('clock-dot');
+  dot.classList.toggle('warn', timeLeft <= 8);
+}
+
+function selectAnswer(i){
+  clearInterval(timerInterval);
+  lockAnswer(i, false);
+}
+
+function lockAnswer(selectedIdx, timedOut){
+  const quiz = QUIZZES[activeQuizIdx];
+  const q = quiz.questions[currentQ];
+  const opts = document.querySelectorAll('#options .opt');
+
+  opts.forEach((el, i) => {
+    el.classList.add('disabled');
+    if(i === q.correct) el.classList.add('correct');
+    if(i === selectedIdx && selectedIdx !== q.correct) el.classList.add('wrong');
+    if(i !== q.correct && i !== selectedIdx) el.classList.add('dim');
+  });
+
+  const isCorrect = selectedIdx === q.correct;
+  if(isCorrect) score++;
+
+  answers.push({selected: selectedIdx, correct: q.correct, timedOut});
+
+  const fb = document.getElementById('feedback');
+  if(timedOut){
+    fb.textContent = "⏱ Vaqt tugadi — to'g'ri javob belgilandi.";
+    fb.classList.add('bad');
+  } else if(isCorrect){
+    fb.textContent = "✓ To'g'ri javob!";
+    fb.classList.add('good');
+  } else {
+    fb.textContent = "✕ Noto'g'ri javob.";
+    fb.classList.add('bad');
+  }
+
+  document.getElementById('score-label').textContent = `Ball: ${score}`;
+  document.getElementById('next-btn').disabled = false;
+}
+
+function skipQuestion(){
+  if(document.getElementById('next-btn').disabled){
+    clearInterval(timerInterval);
+    lockAnswer(-1, false);
+    return;
+  }
+  nextQuestion();
+}
+
+function nextQuestion(){
+  const quiz = QUIZZES[activeQuizIdx];
+  currentQ++;
+  if(currentQ >= quiz.questions.length){
+    showResults();
+  } else {
+    renderQuestion();
+  }
+}
+
+function showResults(){
+  clearInterval(timerInterval);
+  const quiz = QUIZZES[activeQuizIdx];
+  const total = quiz.questions.length;
+  const pct = total ? score/total : 0;
+  saveBestScore(quiz.id, Math.round(pct*100));
+
+  document.getElementById('result-score').textContent = score;
+  document.getElementById('result-total').textContent = `/ ${total} TO'G'RI`;
+
+  let title, msg;
+  if(pct === 1){ title = "Ajoyib! Barchasi to'g'ri 🎉"; msg = "Siz bu mavzuni mukammal bilasiz."; }
+  else if(pct >= 0.8){ title = "Zo'r natija! 🌟"; msg = "Bilimingiz juda yaxshi, biroz mustahkamlang."; }
+  else if(pct >= 0.5){ title = "Yaxshi harakat 👍"; msg = "Ba'zi mavzularni yana bir bor takrorlang."; }
+  else { title = "Mashq qilishda davom eting 💪"; msg = "Quyidagi tahlildan xato joylarni ko'rib chiqing."; }
+
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-msg').textContent = msg;
+
+  const reviewList = document.getElementById('review-list');
+  reviewList.innerHTML = '';
+  const labels = ['A','B','C','D'];
+  quiz.questions.forEach((q, i) => {
+    const a = answers[i] || {selected:-1, correct:q.correct};
+    const isOk = a.selected === q.correct;
+    const div = document.createElement('div');
+    div.className = 'review-item';
+    const yourAnsText = a.selected === -1 ? "Javob berilmadi" : `${labels[a.selected]}) ${q.options[a.selected]}`;
+    div.innerHTML = `
+      <div class="rq"><span class="tag ${isOk ? 'ok' : 'no'}">${isOk ? '✓' : '✕'}</span><span>${i+1}. ${q.q}</span></div>
+      <div class="ans-line ${isOk ? 'goodline' : 'wrongline'}"><b>Sizning javobingiz:</b> ${yourAnsText}</div>
+      ${!isOk ? `<div class="ans-line goodline"><b>To'g'ri javob:</b> ${labels[q.correct]}) ${q.options[q.correct]}</div>` : ''}
+    `;
+    reviewList.appendChild(div);
+  });
+
+  showScreen('result-screen');
+}
+
+function retryQuiz(){
+  startQuiz(activeQuizIdx);
+}
+</script>
+</body>
+</html>
