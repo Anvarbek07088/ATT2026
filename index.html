@@ -337,7 +337,7 @@
         <h1>Attestatsiya test platformasi</h1>
         <p>Informatika fani o‘qituvchilari uchun zamonaviy va qulay mock-test muhiti. Kirishdan so‘ng barcha testlar, natijalar va tahlillar ochiladi.</p>
         <ul class="auth-list">
-          <li>40 soniya / savol vaqt nazorati</li>
+          <li>120 soniya / savol vaqt nazorati</li>
           <li>Darhol natija va javoblar tahlili</li>
           <li>Attestatsiya va mavzuviy testlar</li>
         </ul>
@@ -378,7 +378,7 @@
       </div>
       <div class="hero-pills">
         <span class="hero-pill">Real test formatida</span>
-        <span class="hero-pill">40 soniya / savol</span>
+        <span class="hero-pill">120 soniya / savol</span>
         <span class="hero-pill">Darhol natija</span>
       </div>
     </header>
@@ -461,7 +461,7 @@
       </div>
     </section>
 
-    <footer class="foot">HAR BIR SAVOLGA 40 SONIYA · NATIJALAR SHU QURILMADA SAQLANADI</footer>
+    <footer class="foot">HAR BIR SAVOLGA 120 SONIYA · NATIJALAR SHU QURILMADA SAQLANADI</footer>
   </section>
 
   <!-- ============ QUIZ SCREEN ============ -->
@@ -470,7 +470,7 @@
       <button class="back-btn" onclick="goHome()">← Testlarga qaytish</button>
       <div class="clock" id="clock-box">
         <span class="clock-dot" id="clock-dot"></span>
-        <span class="clock-num" id="timer-num">40</span>
+        <span class="clock-num" id="timer-num">120</span>
       </div>
     </div>
 
@@ -575,7 +575,7 @@ function renderSection(cat, containerId){
       <div class="ticket-body">
         <h3>${quiz.title}</h3>
         <p>${quiz.desc}</p>
-        <div class="ticket-meta"><span>${quiz.questions.length} savol</span><span class="dot">·</span><span>40 s/savol</span></div>
+        <div class="ticket-meta"><span>${quiz.questions.length} savol</span><span class="dot">·</span><span>120 s/savol</span></div>
       </div>
       <div class="ticket-side">
         ${sealHtml}
@@ -629,8 +629,8 @@ let currentQ = 0;
 let score = 0;
 let answers = [];
 let timerInterval = null;
-let timeLeft = 40;
-const TIME_LIMIT = 40;
+let timeLeft = 120;
+const TIME_LIMIT = 120;
 
 function handleLogin(){
   const login = document.getElementById('login-input').value.trim();
