@@ -21,6 +21,15 @@ if(!(await query("SELECT 1 FROM users WHERE role='admin' LIMIT 1")).rowCount){
  if(!emailValid(adminEmail)||!passwordValid(adminPassword))throw Error('Set ADMIN_EMAIL and ADMIN_PASSWORD (12+ characters) before first deployment');
  await query("INSERT INTO users(email,name,password_hash,role) VALUES($1,$2,$3,'admin') ON CONFLICT DO NOTHING",[adminEmail,'Administrator',passwordHash(adminPassword)]);
 }
+
+// Existing initial administrator becomes the owner; other accounts and results remain intact.
+await query("ALTER TABLE users ADD COLUMN IF NOT EXISTS is_owner BOOLEAN NOT NULL DEFAULT FALSE; ALTER TABLE users ADD COLUMN IF NOT EXISTS permissions JSONB NOT NULL DEFAULT '[]'::jsonb; CREATE UNIQUE INDEX IF NOT EXISTS one_platform_owner ON users(is_owner) WHERE is_owner");
+await query("UPDATE users SET is_owner=TRUE WHERE id=(SELECT id FROM users WHERE role='admin' AND active ORDER BY created_at,id LIMIT 1) AND NOT EXISTS (SELECT 1 FROM users WHERE is_owner)");
+const PERMISSIONS=['user_create','user_edit','user_block','user_password','user_delete','view_devices','view_results','view_activity'];
+const allowed=(u,key)=>u.role==='admin'&&(u.is_owner===true||u.permissions.includes(key));
+const validPermissions=p=>Array.isArray(p)&&p.every(x=>PERMISSIONS.includes(x))&&new Set(p).size===p.length;
+const deny=res=>res.status(403).json({error:'Bu amal uchun ruxsat yo‘q'});
+
 app.disable('x-powered-by');
 app.set('trust proxy',1);
 app.use(express.json({limit:'64kb'}));
@@ -29,7 +38,7 @@ const cookie=(req,name)=>{const match=(req.headers.cookie||'').split(';').map(v=
 const cookieSettings={httpOnly:true,secure:process.env.NODE_ENV==='production',sameSite:'lax',path:'/'};
 const wrap=fn=>(req,res,next)=>Promise.resolve(fn(req,res,next)).catch(next);
 const activity=(uid,kind,detail='')=>query('INSERT INTO activity(user_id,kind,detail) VALUES($1,$2,$3)',[uid,kind,detail]);
-const auth=wrap(async(req,res,next)=>{const t=cookie(req,'att_session');if(!t)return res.status(401).json({error:'Hisobga kiring'});const result=await query('SELECT u.id,u.email,u.name,u.role,s.device_id FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=$1 AND s.expires>now() AND u.active',[hash(t)]);if(!result.rowCount)return res.status(401).json({error:'Sessiya tugagan'});req.user=result.rows[0];await query('UPDATE devices SET last_seen=now() WHERE id=$1 AND last_seen < now()-interval \'30 seconds\'',[req.user.device_id]);next()});
+const auth=wrap(async(req,res,next)=>{const t=cookie(req,'att_session');if(!t)return req.path==='/admin'?res.redirect('/'):res.status(401).json({error:'Hisobga kiring'});const result=await query('SELECT u.id,u.email,u.name,u.role,u.is_owner,u.permissions,s.device_id FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=$1 AND s.expires>now() AND u.active',[hash(t)]);if(!result.rowCount)return req.path==='/admin'?res.redirect('/'):res.status(401).json({error:'Sessiya tugagan'});req.user=result.rows[0];await query('UPDATE devices SET last_seen=now() WHERE id=$1 AND last_seen < now()-interval \'30 seconds\'',[req.user.device_id]);next()});
 const admin=(req,res,next)=>req.user.role==='admin'?next():res.status(403).json({error:'Ruxsat yo‘q'});
 app.get('/health',wrap(async(req,res)=>{await query('SELECT 1');res.json({ok:true,tests:bank.length,questions:bank.reduce((n,q)=>n+q.questions.length,0)})}));
 app.post('/api/login',rateLimit({windowMs:15*60*1000,limit:20,standardHeaders:true,legacyHeaders:false,message:{error:'Juda ko‘p urinish. Keyinroq qayta urinib ko‘ring.'}}),wrap(async(req,res)=>{
@@ -48,11 +57,48 @@ app.post('/api/logout',auth,wrap(async(req,res)=>{await query('DELETE FROM sessi
 app.get('/api/scores',auth,wrap(async(req,res)=>{const {rows}=await query('SELECT quiz_id,MAX(ROUND(100.0*score/NULLIF(total,0))) AS best FROM attempts WHERE user_id=$1 AND finished_at IS NOT NULL GROUP BY quiz_id',[req.user.id]);res.json(Object.fromEntries(rows.map(r=>[r.quiz_id,Number(r.best)])))}));
 app.post('/api/attempts',auth,wrap(async(req,res)=>{const q=quizMap.get(req.body.quiz_id);if(!q)return res.status(400).json({error:'Test topilmadi'});const r=await query('INSERT INTO attempts(user_id,quiz_id,total) VALUES($1,$2,$3) RETURNING id',[req.user.id,q.id,q.questions.length]);await activity(req.user.id,'test_started',q.title);res.json({id:r.rows[0].id})}));
 app.post('/api/attempts/:id/finish',auth,wrap(async(req,res)=>{const a=(await query('SELECT * FROM attempts WHERE id=$1 AND user_id=$2',[req.params.id,req.user.id])).rows[0];if(!a)return res.status(404).json({error:'Test topilmadi'});if(a.finished_at)return res.json({score:a.score,total:a.total});const q=quizMap.get(a.quiz_id),answers=req.body.answers;if(!q||!Array.isArray(answers)||answers.length!==q.questions.length||answers.some((x,i)=>!Number.isInteger(x)||x< -1||x>=q.questions[i].options.length))return res.status(400).json({error:'Javoblar noto‘g‘ri'});const score=answers.reduce((n,x,i)=>n+Number(x===q.questions[i].correct),0);const r=await query('UPDATE attempts SET finished_at=now(),score=$1,answers=$2 WHERE id=$3 AND finished_at IS NULL RETURNING id',[score,JSON.stringify(answers),a.id]);if(r.rowCount)await activity(req.user.id,'test_finished',q.title);res.json({score,total:q.questions.length})}));
-app.get('/api/admin/users',auth,admin,wrap(async(req,res)=>{const {rows}=await query("SELECT u.id,u.name,u.email,u.active,u.role,u.created_at,(SELECT count(*) FROM devices d WHERE d.user_id=u.id) AS devices,(SELECT count(*) FROM attempts a WHERE a.user_id=u.id AND a.finished_at IS NOT NULL) AS completed,(SELECT max(last_seen) FROM devices d WHERE d.user_id=u.id) AS last_seen,EXISTS(SELECT 1 FROM devices d JOIN sessions s ON s.device_id=d.id WHERE d.user_id=u.id AND s.expires>now() AND d.last_seen>now()-interval '2 minutes') AS online FROM users u ORDER BY u.created_at DESC");res.json(rows)}));
-app.post('/api/admin/users',auth,admin,wrap(async(req,res)=>{const email=emailNorm(req.body.email),password=req.body.password,name=String(req.body.name||'').trim();if(!emailValid(email)||!passwordValid(password)||!name||name.length>120)return res.status(400).json({error:'Ism, email va kamida 12 belgili parol kerak'});const r=await query('INSERT INTO users(email,name,password_hash) VALUES($1,$2,$3) ON CONFLICT DO NOTHING RETURNING id',[email,name,passwordHash(password)]);if(!r.rowCount)return res.status(409).json({error:'Email mavjud'});res.json({id:r.rows[0].id})}));
-app.patch('/api/admin/users/:id',auth,admin,wrap(async(req,res)=>{const id=req.params.id,u=(await query("SELECT * FROM users WHERE id=$1 AND role='student'",[id])).rows[0];if(!u)return res.status(404).json({error:'Foydalanuvchi topilmadi'});const email=req.body.email===undefined?u.email:emailNorm(req.body.email),name=req.body.name===undefined?u.name:String(req.body.name).trim(),active=req.body.active===undefined?u.active:req.body.active,p=req.body.password;if(!emailValid(email)||!name||name.length>120||typeof active!=='boolean'||(p!==undefined&&!passwordValid(p)))return res.status(400).json({error:'Ma’lumotlar xato'});await query('UPDATE users SET email=$1,name=$2,active=$3,password_hash=$4 WHERE id=$5',[email,name,active,p?passwordHash(p):u.password_hash,id]);if(!active||p||email!==u.email)await query('DELETE FROM sessions WHERE user_id=$1',[id]);res.json({ok:true})}));
-app.delete('/api/admin/users/:id',auth,admin,wrap(async(req,res)=>{await query("DELETE FROM users WHERE id=$1 AND role='student'",[req.params.id]);res.json({ok:true})}));
-app.get('/api/admin/users/:id',auth,admin,wrap(async(req,res)=>{const id=req.params.id;const [devices,attempts,events]=await Promise.all([query('SELECT id,label,first_seen,last_seen FROM devices WHERE user_id=$1 ORDER BY last_seen DESC',[id]),query('SELECT id,quiz_id,started_at,finished_at,score,total FROM attempts WHERE user_id=$1 ORDER BY started_at DESC LIMIT 200',[id]),query('SELECT kind,detail,created_at FROM activity WHERE user_id=$1 ORDER BY created_at DESC LIMIT 200',[id])]);res.json({devices:devices.rows,attempts:attempts.rows,activity:events.rows})}));
+app.get('/api/admin/users',auth,admin,wrap(async(req,res)=>{
+ const {rows}=await query("SELECT u.id,u.name,u.email,u.active,u.role,u.is_owner,u.permissions,u.created_at,(SELECT count(*) FROM devices d WHERE d.user_id=u.id) AS devices,(SELECT count(*) FROM attempts a WHERE a.user_id=u.id AND a.finished_at IS NOT NULL) AS completed,(SELECT max(last_seen) FROM devices d WHERE d.user_id=u.id) AS last_seen,EXISTS(SELECT 1 FROM devices d JOIN sessions s ON s.device_id=d.id WHERE d.user_id=u.id AND s.expires>now() AND d.last_seen>now()-interval '2 minutes') AS online FROM users u WHERE ($1 OR u.role='student') ORDER BY u.created_at DESC",[req.user.is_owner]);
+ res.json(rows.map(u=>{if(!allowed(req.user,'view_devices')){u.devices=null;u.online=null;u.last_seen=null;}if(!allowed(req.user,'view_results'))u.completed=null;return u;}));
+}));
+app.post('/api/admin/users',auth,admin,wrap(async(req,res)=>{
+ const email=emailNorm(req.body.email),password=req.body.password,name=String(req.body.name||'').trim(),role=req.body.role??'student',permissions=req.body.permissions??[];
+ if(!['student','admin'].includes(role)||!validPermissions(permissions)||!emailValid(email)||!passwordValid(password)||!name||name.length>120)return res.status(400).json({error:'Ism, email, rol va kamida 12 belgili parol kerak'});
+ if(role==='admin'?!req.user.is_owner:!allowed(req.user,'user_create'))return deny(res);
+ const r=await query('INSERT INTO users(email,name,password_hash,role,permissions) VALUES($1,$2,$3,$4,$5) ON CONFLICT DO NOTHING RETURNING id',[email,name,passwordHash(password),role,JSON.stringify(role==='admin'?permissions:[])]);
+ if(!r.rowCount)return res.status(409).json({error:'Email mavjud'});await activity(req.user.id,'account_created',role+': '+email);res.json({id:r.rows[0].id});
+}));
+app.patch('/api/admin/users/:id',auth,admin,wrap(async(req,res)=>{
+ const id=req.params.id,b=req.body,u=(await query("SELECT * FROM users WHERE id=$1 AND NOT is_owner",[id])).rows[0];
+ if(!u||(!req.user.is_owner&&u.role!=='student'))return res.status(404).json({error:'Hisob topilmadi'});
+ if(Object.keys(b).some(k=>!['email','name','active','password','permissions'].includes(k)))return res.status(400).json({error:'Noto‘g‘ri maydon'});
+ if(u.role==='admin'&&!req.user.is_owner)return deny(res);
+ if(b.permissions!==undefined&&(!req.user.is_owner||u.role!=='admin'||!validPermissions(b.permissions)))return deny(res);
+ if((b.email!==undefined||b.name!==undefined)&&!allowed(req.user,'user_edit'))return deny(res);
+ if(b.active!==undefined&&!allowed(req.user,'user_block'))return deny(res);
+ if(b.password!==undefined&&!allowed(req.user,'user_password'))return deny(res);
+ const email=b.email===undefined?u.email:emailNorm(b.email),name=b.name===undefined?u.name:String(b.name).trim(),active=b.active===undefined?u.active:b.active,p=b.password;
+ if(!emailValid(email)||!name||name.length>120||typeof active!=='boolean'||(p!==undefined&&!passwordValid(p)))return res.status(400).json({error:'Ma’lumotlar xato'});
+ await query('UPDATE users SET email=$1,name=$2,active=$3,password_hash=$4,permissions=$5 WHERE id=$6 AND NOT is_owner AND ($7 OR role=\'student\')',[email,name,active,p?passwordHash(p):u.password_hash,JSON.stringify(b.permissions??u.permissions),id,req.user.is_owner]);
+ if(!active||p||email!==u.email||b.permissions!==undefined)await query('DELETE FROM sessions WHERE user_id=$1',[id]);
+ await activity(req.user.id,'account_updated',email+' · '+Object.keys(b).join(', '));res.json({ok:true});
+}));
+app.delete('/api/admin/users/:id',auth,admin,wrap(async(req,res)=>{
+ if(!allowed(req.user,'user_delete'))return deny(res);
+ const r=await query("DELETE FROM users WHERE id=$1 AND NOT is_owner AND ($2 OR role='student') RETURNING email",[req.params.id,req.user.is_owner]);
+ if(!r.rowCount)return res.status(404).json({error:'Hisob topilmadi'});
+ await activity(req.user.id,'account_deleted',r.rows[0].email);res.json({ok:true});
+}));
+app.get('/api/admin/users/:id',auth,admin,wrap(async(req,res)=>{
+ const id=req.params.id;const exists=await query("SELECT 1 FROM users WHERE id=$1 AND ($2 OR role='student')",[id,req.user.is_owner]);
+ if(!exists.rowCount)return res.status(404).json({error:'Hisob topilmadi'});
+ if(!['view_devices','view_results','view_activity'].some(p=>allowed(req.user,p)))return deny(res);
+ const [devices,attempts,events]=await Promise.all([
+ allowed(req.user,'view_devices')?query('SELECT id,label,first_seen,last_seen FROM devices WHERE user_id=$1 ORDER BY last_seen DESC',[id]):{rows:[]},
+ allowed(req.user,'view_results')?query('SELECT id,quiz_id,started_at,finished_at,score,total FROM attempts WHERE user_id=$1 ORDER BY started_at DESC LIMIT 200',[id]):{rows:[]},
+ allowed(req.user,'view_activity')?query('SELECT kind,detail,created_at FROM activity WHERE user_id=$1 ORDER BY created_at DESC LIMIT 200',[id]):{rows:[]}
+ ]);res.json({devices:devices.rows,attempts:attempts.rows,activity:events.rows});
+}));
 app.get('/admin',auth,admin,(req,res)=>res.sendFile(new URL('./admin.html',import.meta.url).pathname));
 app.get('/',(req,res)=>res.type('html').send(html));
 app.get('/main.js',(req,res)=>res.sendFile(new URL('./main.js',import.meta.url).pathname));
