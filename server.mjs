@@ -78,9 +78,11 @@ app.post('/api/admin/notifications/test',auth,admin,wrap(async(req,res)=>{
 app.post('/api/admin/notifications/pair',auth,admin,wrap(async(req,res)=>{
  if(!fullAdmin(req.user))return deny(res);
  if(!botConfigured())return res.status(400).json({error:'Render’da TELEGRAM_BOT_TOKEN sozlanmagan'});
+ const bot=await telegramCall('getMe',{});
+ if(!bot||!bot.is_bot||!/^\w{5,32}$/.test(bot.username||''))return res.status(502).json({error:'Telegram bot tokenini tekshiring'});
  const code=randomBytes(12).toString('hex');
  await query("UPDATE telegram_settings SET pair_hash=$1,pair_expires=now()+interval '10 minutes' WHERE id=1",[hash(code)]);
- res.json({command:'/pair@attanvarbek_bot '+code});
+ res.json({command:'/pair@'+bot.username+' '+code,bot_username:bot.username});
 }));
 app.post('/api/admin/notifications/confirm-pair',auth,admin,wrap(async(req,res)=>{
  if(!fullAdmin(req.user))return deny(res);
@@ -89,7 +91,7 @@ app.post('/api/admin/notifications/confirm-pair',auth,admin,wrap(async(req,res)=
  const updates=await telegramCall('getUpdates',{limit:100,timeout:0,allowed_updates:['message']});
  if(!Array.isArray(updates))return res.status(502).json({error:'Telegram bilan aloqa xatosi. Bot tokenini tekshiring.'});
  const match=updates.map(x=>x.message).filter(Boolean).find(m=>{
-  const cmd=String(m.text||'').match(/^\/pair(?:@attanvarbek_bot)? ([a-f0-9]{24})$/i);
+  const cmd=String(m.text||'').match(/^\/pair(?:@[A-Za-z0-9_]{5,32})? ([a-f0-9]{24})$/i);
   return cmd&&hash(cmd[1])===p.pair_hash&&['private','group','supergroup'].includes(m.chat?.type)&&/^-?\d+$/.test(String(m.chat?.id));
  });
  if(!match)return res.status(404).json({error:'Botga bog‘lash buyrug‘i hali kelmagan. Telegramga yuboring va yana tekshiring.'});
