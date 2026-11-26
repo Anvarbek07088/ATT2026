@@ -345,10 +345,10 @@
       <div class="auth-form">
         <p class="eyebrow">Kirish</p>
         <h2>Hisobga kirish</h2>
-        <p class="sub">Platformaga kirish uchun login va parolni kiriting.</p>
+        <p class="sub">Admin bergan email va parol bilan kiring. Test natijalari, kirish va sayt ichidagi faoliyat tarixi serverda saqlanadi. Qurilma soni brauzer profillari asosida hisoblanadi.</p>
         <div class="auth-field">
-          <label for="login-input">Login</label>
-          <input id="login-input" type="password" inputmode="text" autocomplete="new-password" spellcheck="false" placeholder="">
+          <label for="login-input">Email</label>
+          <input id="login-input" type="email" inputmode="email" autocomplete="username" spellcheck="false" placeholder="">
         </div>
         <div class="auth-field">
           <label for="password-input">Parol</label>
@@ -363,7 +363,7 @@
   <!-- ============ HOME SCREEN ============ -->
   <section id="home-screen" class="hidden">
 
-    <header class="letterhead">
+    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding:12px"><span id="current-user"></span><a id="admin-link" href="/admin" hidden>Admin panel</a><button class="btn" onclick="logout()">Chiqish</button></div><header class="letterhead">
       <div class="lh-top">
         <div class="crest">A·26</div>
         <div class="lh-meta">INFORMATIKA FANI<br>TEST MARKAZI</div>
@@ -461,7 +461,7 @@
       </div>
     </section>
 
-    <footer class="foot">HAR BIR SAVOLGA 120 SONIYA · NATIJALAR SHU QURILMADA SAQLANADI</footer>
+    <footer class="foot">HAR BIR SAVOLGA 120 SONIYA · NATIJALAR SERVERDA SAQLANADI</footer>
   </section>
 
   <!-- ============ QUIZ SCREEN ============ -->
@@ -529,15 +529,22 @@ const QUIZZES = [{"id": "informatika-axborot", "title": "1-test: Informatika va 
 /* =========================================================
    BEST SCORES (localStorage)
    ========================================================= */
-const SCORES_KEY = "attestatsiya2026_best_scores_v2";
-function loadBestScores(){
-  try{ return JSON.parse(localStorage.getItem(SCORES_KEY)) || {}; }catch(e){ return {}; }
+let serverScores = {};
+function loadBestScores(){return serverScores;}
+function saveBestScore(quizId,pct){serverScores[quizId]=Math.max(serverScores[quizId]||0,pct);}
+async function api(path,method='GET',data){
+ const response=await fetch(path,{method,headers:{'Content-Type':'application/json','X-ATT-Request':'1'},...(data===undefined?{}:{body:JSON.stringify(data)})});
+ const result=await response.json();if(!response.ok)throw Error(result.error||'Server bilan aloqa xatosi');return result;
 }
-function saveBestScore(quizId, pct){
-  const scores = loadBestScores();
-  if(scores[quizId] === undefined || pct > scores[quizId]) scores[quizId] = pct;
-  localStorage.setItem(SCORES_KEY, JSON.stringify(scores));
+let currentAttempt=null;
+let starting=false;
+let saving=false;
+async function enterPlatform(user){
+ serverScores=await api('/api/scores');document.getElementById('current-user').textContent='Salom, '+user.name;
+ document.getElementById('admin-link').hidden=user.role!=='admin';renderHome();showScreen('home-screen');
 }
+async function logout(){try{await api('/api/logout','POST');location.reload();}catch(e){alert(e.message);}}
+setInterval(()=>{if(document.getElementById('auth-screen').classList.contains('hidden'))api('/api/me').catch(()=>{ });},60000);
 function overallBest(){
   const scores = loadBestScores();
   const vals = Object.values(scores);
@@ -613,6 +620,7 @@ document.querySelectorAll('#cat-tabs .tab').forEach(btn => {
 
 renderHome();
 showScreen('auth-screen');
+api('/api/me').then(enterPlatform).catch(()=>{});
 
 document.getElementById('login-input').addEventListener('keydown', (e) => {
   if(e.key === 'Enter') handleLogin();
@@ -632,17 +640,10 @@ let timerInterval = null;
 let timeLeft = 120;
 const TIME_LIMIT = 120;
 
-function handleLogin(){
-  const login = document.getElementById('login-input').value.trim();
-  const password = document.getElementById('password-input').value.trim();
-  const errorBox = document.getElementById('auth-error');
-
-  if(login === 'ATT2026' && password === 'att123'){
-    errorBox.textContent = '';
-    showScreen('home-screen');
-  } else {
-    errorBox.textContent = 'Login yoki parol xato. Iltimos, maʼlumotlarni tekshiring.';
-  }
+async function handleLogin(){
+ const email=document.getElementById('login-input').value.trim(),password=document.getElementById('password-input').value;
+ const err=document.getElementById('auth-error');err.textContent='Kirilmoqda…';
+ try{const user=await api('/api/login','POST',{email,password});document.getElementById('password-input').value='';await enterPlatform(user);err.textContent='';}catch(e){err.textContent=e.message;}
 }
 
 function showScreen(id){
@@ -658,7 +659,11 @@ function goHome(){
   showScreen('home-screen');
 }
 
-function startQuiz(idx){
+async function startQuiz(idx){
+  if(starting||saving)return;
+  starting=true;
+  try{currentAttempt=(await api('/api/attempts','POST',{quiz_id:QUIZZES[idx].id})).id;}
+  catch(e){alert(e.message);return;}finally{starting=false;}
   activeQuizIdx = idx;
   currentQ = 0;
   score = 0;
@@ -730,6 +735,7 @@ function selectAnswer(i){
 }
 
 function lockAnswer(selectedIdx, timedOut){
+  if(answers.length>currentQ)return;
   const quiz = QUIZZES[activeQuizIdx];
   const q = quiz.questions[currentQ];
   const opts = document.querySelectorAll('#options .opt');
@@ -772,6 +778,7 @@ function skipQuestion(){
 }
 
 function nextQuestion(){
+  if(saving||answers.length<=currentQ)return;
   const quiz = QUIZZES[activeQuizIdx];
   currentQ++;
   if(currentQ >= quiz.questions.length){
@@ -781,10 +788,14 @@ function nextQuestion(){
   }
 }
 
-function showResults(){
+async function showResults(){
+  if(saving)return;
+  saving=true;
   clearInterval(timerInterval);
   const quiz = QUIZZES[activeQuizIdx];
   const total = quiz.questions.length;
+  try{const result=await api('/api/attempts/'+currentAttempt+'/finish','POST',{answers:answers.map(a=>a.selected)});score=result.score;}
+  catch(e){alert('Natija saqlanmadi: '+e.message);currentQ=total-1;return;}finally{saving=false;}
   const pct = total ? score/total : 0;
   saveBestScore(quiz.id, Math.round(pct*100));
 
