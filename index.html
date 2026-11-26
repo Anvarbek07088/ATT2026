@@ -355,7 +355,7 @@
           <input id="password-input" type="password" inputmode="text" autocomplete="new-password" spellcheck="false" placeholder="">
         </div>
         <button class="btn btn-primary auth-btn" onclick="handleLogin()">Kirish</button>
-        <p class="auth-error" id="auth-error"></p>
+        <p class="auth-error" id="auth-error"></p><button class="btn" type="button" onclick="document.getElementById('registration').showModal()">Kirish uchun ro‘yxatdan o‘tish</button>
       </div>
     </div>
   </section>
@@ -544,7 +544,7 @@ async function enterPlatform(user){
  document.getElementById('admin-link').hidden=user.role!=='admin';renderHome();showScreen('home-screen');
 }
 async function logout(){try{await api('/api/logout','POST');location.reload();}catch(e){alert(e.message);}}
-setInterval(()=>{if(document.getElementById('auth-screen').classList.contains('hidden'))api('/api/me').catch(()=>{ });},60000);
+setInterval(()=>{if(document.getElementById('auth-screen').classList.contains('hidden'))api('/api/me').catch(()=>{clearInterval(timerInterval);showScreen('auth-screen');document.getElementById('auth-error').textContent='Sessiya yakunlangan. Qayta kiring.';});},60000);
 function overallBest(){
   const scores = loadBestScores();
   const vals = Object.values(scores);
@@ -836,5 +836,7 @@ function retryQuiz(){
 }
 </script>
 <script src="./main.js"></script>
-</body>
+<dialog id="registration" style="max-width:440px;width:92%;border:1px solid #c8d5e2;border-radius:14px;padding:24px"><h2>Kirish so‘rovi</h2><form id="registration-form"><div class="auth-field"><label>Ism-familiya</label><input name="name" required maxlength="120"></div><div class="auth-field"><label>Email</label><input name="email" type="email" required></div><div class="auth-field"><label>Parol (12+ belgi)</label><input name="password" type="password" minlength="12" maxlength="128" autocomplete="new-password" required></div><p>Admin email egasini tekshiradi va kirishni tasdiqlaydi. Kirish va test tarixi, brauzer profili va qurilma turi platformada saqlanadi; odatda 2 ta faol brauzer profiliga ruxsat beriladi.</p><label><input name="consent" type="checkbox" required> Mazkur ma’lumotlar qayd etilishiga roziman.</label><p id="register-status" role="status"></p><button class="btn btn-primary">So‘rov yuborish</button> <button class="btn" type="button" onclick="document.getElementById('registration').close()">Yopish</button></form></dialog><script>
+document.getElementById('registration-form').addEventListener('submit',async e=>{e.preventDefault();const form=e.target,data=Object.fromEntries(new FormData(form));data.consent=form.elements.consent.checked;const status=document.getElementById('register-status');try{const r=await api('/api/register','POST',data);status.textContent=r.message;form.reset()}catch(err){status.textContent=err.message}});
+</script></body>
 </html>
