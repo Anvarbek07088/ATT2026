@@ -1,0 +1,60 @@
+import express from 'express';
+import pg from 'pg';
+import {randomBytes, scryptSync, timingSafeEqual, createHash} from 'node:crypto';
+import {readFileSync} from 'node:fs';
+import rateLimit from 'express-rate-limit';
+const app=express(), db=new pg.Pool({connectionString:process.env.DATABASE_URL});
+const html=readFileSync(new URL('./index.html',import.meta.url),'utf8');
+const bank=JSON.parse(html.match(/const QUIZZES = (\[[\s\S]*?\]);\n\n\/\* =+/)[1]);
+const quizMap=new Map(bank.map(q=>[q.id,q]));
+const hash=s=>createHash('sha256').update(s).digest('hex');
+const token=()=>randomBytes(32).toString('hex');
+function passwordHash(p){const salt=token();return salt+':'+scryptSync(p,salt,64).toString('hex')}
+function checkPassword(p,stored){const [salt,key]=stored.split(':');const b=Buffer.from(key,'hex');return b.length===64&&timingSafeEqual(b,scryptSync(p,salt,64))}
+const emailValid=e=>typeof e==='string'&&e.length<=254&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+const passwordValid=p=>typeof p==='string'&&p.length>=12&&p.length<=128;
+const emailNorm=e=>String(e||'').trim().toLowerCase();
+const query=(sql,params=[])=>db.query(sql,params);
+await query("CREATE TABLE IF NOT EXISTS users(id BIGSERIAL PRIMARY KEY,email TEXT UNIQUE NOT NULL,name TEXT NOT NULL,password_hash TEXT NOT NULL,role TEXT NOT NULL DEFAULT 'student' CHECK(role IN ('student','admin')),active BOOLEAN NOT NULL DEFAULT TRUE,created_at TIMESTAMPTZ DEFAULT now()); CREATE TABLE IF NOT EXISTS devices(id BIGSERIAL PRIMARY KEY,user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,device_hash TEXT NOT NULL,label TEXT NOT NULL,first_seen TIMESTAMPTZ DEFAULT now(),last_seen TIMESTAMPTZ DEFAULT now(),UNIQUE(user_id,device_hash)); CREATE TABLE IF NOT EXISTS sessions(token_hash TEXT PRIMARY KEY,user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,device_id BIGINT REFERENCES devices(id) ON DELETE CASCADE,expires TIMESTAMPTZ NOT NULL); CREATE TABLE IF NOT EXISTS attempts(id BIGSERIAL PRIMARY KEY,user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,quiz_id TEXT NOT NULL,started_at TIMESTAMPTZ DEFAULT now(),finished_at TIMESTAMPTZ,score INTEGER,total INTEGER,answers JSONB); CREATE TABLE IF NOT EXISTS activity(id BIGSERIAL PRIMARY KEY,user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,kind TEXT NOT NULL,detail TEXT,created_at TIMESTAMPTZ DEFAULT now()); CREATE INDEX IF NOT EXISTS idx_attempt_user ON attempts(user_id); CREATE INDEX IF NOT EXISTS idx_activity_user ON activity(user_id,created_at DESC)");
+const adminEmail=emailNorm(process.env.ADMIN_EMAIL), adminPassword=process.env.ADMIN_PASSWORD;
+if(!(await query("SELECT 1 FROM users WHERE role='admin' LIMIT 1")).rowCount){
+ if(!emailValid(adminEmail)||!passwordValid(adminPassword))throw Error('Set ADMIN_EMAIL and ADMIN_PASSWORD (12+ characters) before first deployment');
+ await query("INSERT INTO users(email,name,password_hash,role) VALUES($1,$2,$3,'admin') ON CONFLICT DO NOTHING",[adminEmail,'Administrator',passwordHash(adminPassword)]);
+}
+app.disable('x-powered-by');
+app.set('trust proxy',1);
+app.use(express.json({limit:'64kb'}));
+app.use((req,res,next)=>{res.set({'X-Content-Type-Options':'nosniff','Referrer-Policy':'same-origin','X-Frame-Options':'DENY','Cache-Control':'no-store'});if(!['GET','HEAD','OPTIONS'].includes(req.method)&&req.get('X-ATT-Request')!=='1')return res.status(403).json({error:'So‘rov rad etildi'});next()});
+const cookie=(req,name)=>{const match=(req.headers.cookie||'').split(';').map(v=>v.trim()).find(v=>v.startsWith(name+'='));return match?match.slice(name.length+1):''};
+const cookieSettings={httpOnly:true,secure:process.env.NODE_ENV==='production',sameSite:'lax',path:'/'};
+const wrap=fn=>(req,res,next)=>Promise.resolve(fn(req,res,next)).catch(next);
+const activity=(uid,kind,detail='')=>query('INSERT INTO activity(user_id,kind,detail) VALUES($1,$2,$3)',[uid,kind,detail]);
+const auth=wrap(async(req,res,next)=>{const t=cookie(req,'att_session');if(!t)return res.status(401).json({error:'Hisobga kiring'});const result=await query('SELECT u.id,u.email,u.name,u.role,s.device_id FROM sessions s JOIN users u ON u.id=s.user_id WHERE s.token_hash=$1 AND s.expires>now() AND u.active',[hash(t)]);if(!result.rowCount)return res.status(401).json({error:'Sessiya tugagan'});req.user=result.rows[0];await query('UPDATE devices SET last_seen=now() WHERE id=$1 AND last_seen < now()-interval \'30 seconds\'',[req.user.device_id]);next()});
+const admin=(req,res,next)=>req.user.role==='admin'?next():res.status(403).json({error:'Ruxsat yo‘q'});
+app.get('/health',wrap(async(req,res)=>{await query('SELECT 1');res.json({ok:true,tests:bank.length,questions:bank.reduce((n,q)=>n+q.questions.length,0)})}));
+app.post('/api/login',rateLimit({windowMs:15*60*1000,limit:20,standardHeaders:true,legacyHeaders:false,message:{error:'Juda ko‘p urinish. Keyinroq qayta urinib ko‘ring.'}}),wrap(async(req,res)=>{
+ const email=emailNorm(req.body.email),p=req.body.password;if(!emailValid(email)||typeof p!=='string'||p.length>128)return res.status(400).json({error:'Email yoki parol xato'});
+ const {rows}=await query('SELECT * FROM users WHERE email=$1 AND active',[email]);const u=rows[0];
+ if(!u||!checkPassword(p,u.password_hash))return res.status(401).json({error:'Email yoki parol xato'});
+ let device=cookie(req,'att_device');if(!/^[a-f0-9]{64}$/.test(device))device=token();
+ const label=String(req.get('user-agent')||'Noma’lum brauzer').slice(0,250);
+ const d=(await query('INSERT INTO devices(user_id,device_hash,label) VALUES($1,$2,$3) ON CONFLICT(user_id,device_hash) DO UPDATE SET last_seen=now(),label=excluded.label RETURNING id',[u.id,hash(device),label])).rows[0];
+ const session=token();await query('DELETE FROM sessions WHERE expires<=now() OR (user_id=$1 AND device_id=$2)',[u.id,d.id]);await query("INSERT INTO sessions VALUES($1,$2,$3,now()+interval '7 days')",[hash(session),u.id,d.id]);
+ res.cookie('att_session',session,{...cookieSettings,maxAge:7*86400000});res.cookie('att_device',device,{...cookieSettings,maxAge:365*86400000});
+ await activity(u.id,'login','Hisobga kirish');res.json({name:u.name,email:u.email,role:u.role});
+}));
+app.get('/api/me',auth,(req,res)=>res.json(req.user));
+app.post('/api/logout',auth,wrap(async(req,res)=>{await query('DELETE FROM sessions WHERE token_hash=$1',[hash(cookie(req,'att_session'))]);await activity(req.user.id,'logout','Hisobdan chiqish');res.clearCookie('att_session',cookieSettings);res.json({ok:true})}));
+app.get('/api/scores',auth,wrap(async(req,res)=>{const {rows}=await query('SELECT quiz_id,MAX(ROUND(100.0*score/NULLIF(total,0))) AS best FROM attempts WHERE user_id=$1 AND finished_at IS NOT NULL GROUP BY quiz_id',[req.user.id]);res.json(Object.fromEntries(rows.map(r=>[r.quiz_id,Number(r.best)])))}));
+app.post('/api/attempts',auth,wrap(async(req,res)=>{const q=quizMap.get(req.body.quiz_id);if(!q)return res.status(400).json({error:'Test topilmadi'});const r=await query('INSERT INTO attempts(user_id,quiz_id,total) VALUES($1,$2,$3) RETURNING id',[req.user.id,q.id,q.questions.length]);await activity(req.user.id,'test_started',q.title);res.json({id:r.rows[0].id})}));
+app.post('/api/attempts/:id/finish',auth,wrap(async(req,res)=>{const a=(await query('SELECT * FROM attempts WHERE id=$1 AND user_id=$2',[req.params.id,req.user.id])).rows[0];if(!a)return res.status(404).json({error:'Test topilmadi'});if(a.finished_at)return res.json({score:a.score,total:a.total});const q=quizMap.get(a.quiz_id),answers=req.body.answers;if(!q||!Array.isArray(answers)||answers.length!==q.questions.length||answers.some((x,i)=>!Number.isInteger(x)||x< -1||x>=q.questions[i].options.length))return res.status(400).json({error:'Javoblar noto‘g‘ri'});const score=answers.reduce((n,x,i)=>n+Number(x===q.questions[i].correct),0);const r=await query('UPDATE attempts SET finished_at=now(),score=$1,answers=$2 WHERE id=$3 AND finished_at IS NULL RETURNING id',[score,JSON.stringify(answers),a.id]);if(r.rowCount)await activity(req.user.id,'test_finished',q.title);res.json({score,total:q.questions.length})}));
+app.get('/api/admin/users',auth,admin,wrap(async(req,res)=>{const {rows}=await query("SELECT u.id,u.name,u.email,u.active,u.role,u.created_at,(SELECT count(*) FROM devices d WHERE d.user_id=u.id) AS devices,(SELECT count(*) FROM attempts a WHERE a.user_id=u.id AND a.finished_at IS NOT NULL) AS completed,(SELECT max(last_seen) FROM devices d WHERE d.user_id=u.id) AS last_seen,EXISTS(SELECT 1 FROM devices d JOIN sessions s ON s.device_id=d.id WHERE d.user_id=u.id AND s.expires>now() AND d.last_seen>now()-interval '2 minutes') AS online FROM users u ORDER BY u.created_at DESC");res.json(rows)}));
+app.post('/api/admin/users',auth,admin,wrap(async(req,res)=>{const email=emailNorm(req.body.email),password=req.body.password,name=String(req.body.name||'').trim();if(!emailValid(email)||!passwordValid(password)||!name||name.length>120)return res.status(400).json({error:'Ism, email va kamida 12 belgili parol kerak'});const r=await query('INSERT INTO users(email,name,password_hash) VALUES($1,$2,$3) ON CONFLICT DO NOTHING RETURNING id',[email,name,passwordHash(password)]);if(!r.rowCount)return res.status(409).json({error:'Email mavjud'});res.json({id:r.rows[0].id})}));
+app.patch('/api/admin/users/:id',auth,admin,wrap(async(req,res)=>{const id=req.params.id,u=(await query("SELECT * FROM users WHERE id=$1 AND role='student'",[id])).rows[0];if(!u)return res.status(404).json({error:'Foydalanuvchi topilmadi'});const email=req.body.email===undefined?u.email:emailNorm(req.body.email),name=req.body.name===undefined?u.name:String(req.body.name).trim(),active=req.body.active===undefined?u.active:req.body.active,p=req.body.password;if(!emailValid(email)||!name||name.length>120||typeof active!=='boolean'||(p!==undefined&&!passwordValid(p)))return res.status(400).json({error:'Ma’lumotlar xato'});await query('UPDATE users SET email=$1,name=$2,active=$3,password_hash=$4 WHERE id=$5',[email,name,active,p?passwordHash(p):u.password_hash,id]);if(!active||p||email!==u.email)await query('DELETE FROM sessions WHERE user_id=$1',[id]);res.json({ok:true})}));
+app.delete('/api/admin/users/:id',auth,admin,wrap(async(req,res)=>{await query("DELETE FROM users WHERE id=$1 AND role='student'",[req.params.id]);res.json({ok:true})}));
+app.get('/api/admin/users/:id',auth,admin,wrap(async(req,res)=>{const id=req.params.id;const [devices,attempts,events]=await Promise.all([query('SELECT id,label,first_seen,last_seen FROM devices WHERE user_id=$1 ORDER BY last_seen DESC',[id]),query('SELECT id,quiz_id,started_at,finished_at,score,total FROM attempts WHERE user_id=$1 ORDER BY started_at DESC LIMIT 200',[id]),query('SELECT kind,detail,created_at FROM activity WHERE user_id=$1 ORDER BY created_at DESC LIMIT 200',[id])]);res.json({devices:devices.rows,attempts:attempts.rows,activity:events.rows})}));
+app.get('/admin',auth,admin,(req,res)=>res.sendFile(new URL('./admin.html',import.meta.url).pathname));
+app.get('/',(req,res)=>res.type('html').send(html));
+app.get('/main.js',(req,res)=>res.sendFile(new URL('./main.js',import.meta.url).pathname));
+app.use((err,req,res,next)=>{console.error(err.code||err.name);res.status(err.code==='23505'?409:500).json({error:err.code==='23505'?'Email mavjud':'Server xatosi'})});
+app.listen(Number(process.env.PORT||3000),'0.0.0.0');
