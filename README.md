@@ -1,1 +1,3 @@
-# ATT2026
+# Digital Ustoz
+
+Egasi va asoschisi: Toshmamatov Anvarbek
