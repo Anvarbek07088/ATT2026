@@ -453,6 +453,336 @@
   .password-toggle:hover{ background:#eaf4f2; color:var(--brand-teal-deep); }
   .auth-btn{ background:linear-gradient(135deg,var(--brand-navy),var(--brand-teal)); box-shadow:0 10px 20px rgba(36,106,120,.2); }
   #registration form>label input{ accent-color:var(--brand-teal); }
+
+  /* ================== DIGITAL USTOZ 2.0 ================== */
+  :root{
+    --du-navy:#101a44;
+    --du-blue:#5664d9;
+    --du-cyan:#27b6c9;
+    --du-violet:#7c57c9;
+    --du-coral:#f06f78;
+    --du-mint:#52bd9b;
+    --du-surface:#f7f8ff;
+  }
+  body{
+    background:
+      radial-gradient(circle at 8% 2%, rgba(86,100,217,.16), transparent 22rem),
+      radial-gradient(circle at 96% 12%, rgba(39,182,201,.12), transparent 24rem),
+      linear-gradient(135deg,#f8f9ff 0%,#f3f7fc 52%,#fdfaff 100%);
+    color:var(--du-navy);
+  }
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    z-index:-2;
+    opacity:.32;
+    background-image:radial-gradient(rgba(86,100,217,.24) 1px,transparent 1px);
+    background-size:24px 24px;
+    mask-image:linear-gradient(to bottom,#000 0,transparent 38%);
+  }
+  .wrap{max-width:1180px;padding-bottom:64px}
+  .wrap::before,.wrap::after{display:none}
+
+  .auth-screen{min-height:100vh;padding:24px 0}
+  .auth-card{
+    max-width:1120px;
+    min-height:min(720px,calc(100vh - 48px));
+    grid-template-columns:1.08fr .92fr;
+    border:1px solid rgba(255,255,255,.75);
+    border-radius:32px;
+    box-shadow:0 30px 90px rgba(31,46,102,.18);
+  }
+  .auth-intro{
+    overflow:hidden;
+    background:
+      radial-gradient(circle at 78% 15%,rgba(93,214,219,.28),transparent 11rem),
+      radial-gradient(circle at 15% 88%,rgba(153,121,230,.28),transparent 15rem),
+      linear-gradient(145deg,#111943 0%,#29317a 58%,#4a4f9d 100%);
+  }
+  .auth-intro::before{
+    content:"";
+    position:absolute;
+    width:260px;height:260px;
+    right:-92px;top:-98px;
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:72px;
+    transform:rotate(28deg);
+    box-shadow:0 0 0 30px rgba(255,255,255,.025),0 0 0 64px rgba(255,255,255,.018);
+  }
+  .auth-badge{
+    border-radius:12px;
+    background:rgba(255,255,255,.12);
+    border-color:rgba(255,255,255,.2);
+  }
+  .auth-intro h1{font-size:clamp(42px,5vw,64px);max-width:520px}
+  .auth-intro p{font-size:16px;max-width:500px}
+  .auth-list li::before{
+    content:"";
+    width:9px;height:9px;
+    border-radius:3px;
+    background:#68d4c5;
+    box-shadow:0 0 0 6px rgba(104,212,197,.12);
+  }
+  .auth-form{padding:56px clamp(32px,5vw,64px)}
+  .auth-form h2{font-size:38px;color:var(--du-navy)}
+  .auth-field input{
+    min-height:54px;
+    border-radius:14px;
+    border-color:#dde2f2;
+    background:#fbfcff;
+  }
+  .auth-field input:focus{
+    border-color:var(--du-blue);
+    box-shadow:0 0 0 4px rgba(86,100,217,.11);
+  }
+  .auth-btn{
+    min-height:54px;
+    border-radius:14px;
+    background:linear-gradient(135deg,#5664d9,#6d54bc);
+  }
+  .auth-register{border-radius:14px;min-height:48px}
+
+  #home-screen{padding-top:18px}
+  .user-bar{
+    min-height:72px;
+    margin-bottom:18px;
+    padding:10px 12px 10px 18px;
+    border:1px solid rgba(218,222,242,.9);
+    border-radius:20px;
+    background:rgba(255,255,255,.82);
+    backdrop-filter:blur(18px);
+    box-shadow:0 14px 40px rgba(33,43,99,.07);
+  }
+  .user-info{color:var(--du-navy);font-weight:750}
+  .user-bar .btn{
+    border:0;
+    border-radius:12px;
+    background:#f1f3fc;
+    color:#4a527e;
+  }
+  #admin-link{
+    display:inline-flex;
+    align-items:center;
+    min-height:38px;
+    padding:0 13px;
+    border-radius:12px;
+    background:rgba(86,100,217,.1);
+  }
+
+  .letterhead{
+    margin-top:0;
+    min-height:350px;
+    display:grid;
+    align-content:center;
+    overflow:hidden;
+    isolation:isolate;
+    border:0;
+    border-radius:28px;
+    padding:46px 48px;
+    color:#fff;
+    background:
+      radial-gradient(circle at 82% 18%,rgba(97,220,224,.24),transparent 12rem),
+      radial-gradient(circle at 58% 110%,rgba(240,111,120,.16),transparent 16rem),
+      linear-gradient(135deg,#171f58 0%,#343e92 58%,#4e56ad 100%);
+    box-shadow:0 24px 55px rgba(44,49,112,.17);
+  }
+  .letterhead::before{
+    content:"";
+    position:absolute;
+    z-index:-1;
+    width:300px;height:300px;
+    right:-70px;bottom:-170px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,.12);
+    box-shadow:0 0 0 34px rgba(255,255,255,.025),0 0 0 72px rgba(255,255,255,.018);
+  }
+  .letterhead::after{
+    content:"DU";
+    position:absolute;
+    z-index:-1;
+    right:55px;
+    top:34px;
+    font:800 86px/1 'Source Serif 4',serif;
+    letter-spacing:-.08em;
+    color:rgba(255,255,255,.055);
+  }
+  .lh-top{position:absolute;top:24px;left:48px;right:48px;margin:0}
+  .crest{
+    width:44px;height:44px;border:1px solid rgba(255,255,255,.18);
+    border-radius:13px;color:#fff;background:rgba(255,255,255,.09);
+  }
+  .lh-meta{color:rgba(255,255,255,.66)}
+  .letterhead .eyebrow{color:#bfc5ff;margin-top:48px}
+  h1.hero{color:#fff;font-size:clamp(46px,7vw,74px);line-height:.98}
+  h1.hero em{
+    color:#77d6db;
+    background:none;
+  }
+  .lede{color:#d9def7;max-width:670px;font-size:16px}
+  .stat-row{margin-top:28px;gap:52px}
+  .stat .num{color:#fff;font-size:32px}
+  .stat .lbl{color:#abb5e6}
+  .hero-pills{position:absolute;right:48px;bottom:38px;max-width:300px;justify-content:flex-end}
+  .hero-pill{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.07);
+    color:#eef0ff;
+  }
+  .hero-pill::before{color:#77d6db}
+
+  .tabs{
+    top:12px;
+    margin:18px 0 8px;
+    padding:7px;
+    border:1px solid #e3e5f1;
+    border-radius:18px;
+    background:rgba(255,255,255,.88);
+    box-shadow:0 14px 38px rgba(37,43,103,.08);
+  }
+  .tab{font-size:13.5px;padding:11px 16px;border-radius:12px}
+  .tab.active{
+    color:#fff;
+    background:linear-gradient(135deg,#5664d9,#725ac2);
+    box-shadow:0 8px 18px rgba(86,100,217,.22);
+  }
+
+  .section{padding-top:34px}
+  .section-num{
+    display:inline-flex;
+    border-radius:999px;
+    padding:5px 9px;
+    color:#5664d9;
+    background:#eef0ff;
+  }
+  .section-title{font-size:30px;color:var(--du-navy)}
+  .section-desc{font-size:14.5px;max-width:720px;color:#687291}
+
+  .tickets{
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:14px;
+  }
+  .ticket{
+    min-height:170px;
+    grid-template-columns:44px 1fr;
+    align-content:start;
+    margin:0;
+    border:1px solid #e3e6f2;
+    border-radius:18px;
+    padding:18px;
+    background:rgba(255,255,255,.86);
+    box-shadow:0 14px 34px rgba(46,50,105,.055);
+  }
+  .ticket-num{
+    width:44px;height:44px;
+    padding:0;
+    border:0;border-radius:12px;
+    display:grid;place-items:center;
+    background:#f0f2ff;
+    color:#5664d9;
+  }
+  .ticket-body{padding-top:3px}
+  .ticket-body h3{font-size:16px}
+  .ticket-meta{color:#8a90aa}
+  .ticket-side{
+    grid-column:1/-1;
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:10px;
+    padding-top:12px;
+    border-top:1px dashed #dde1f0;
+  }
+  .ticket:hover{
+    border-color:#b9bfee;
+    transform:translateY(-4px);
+    box-shadow:0 18px 38px rgba(46,50,105,.11);
+  }
+  .seal{background:#f8f1ff;border:0;color:#7357b4}
+  .seal.good{background:#ebf8f3;color:#278364}
+  .seal.mid{background:#fff5e7;color:#aa7332}
+  .seal.low{background:#fff0f2;color:#c25d69}
+  .seal.empty{background:#f2f4f9;border:0;color:#8a90a3}
+  .btn-start{
+    border-radius:11px;
+    background:linear-gradient(135deg,#5664d9,#7459c1);
+  }
+
+  .board{
+    margin-top:44px;
+    border:1px solid #e3e5f1;
+    border-radius:24px;
+    background:rgba(255,255,255,.88);
+    box-shadow:0 18px 46px rgba(46,50,105,.07);
+  }
+  .board-item{grid-template-columns:150px 1fr;border-bottom-color:#e7e8f2}
+  .board-item:hover{background:#f7f8ff}
+  .board-tag{color:#5664d9}
+  .support-chip{
+    border:0;
+    background:#eef0ff;
+    color:#5664d9;
+  }
+  .support-card{
+    border-radius:16px;
+    border-color:#e5e7f3;
+    background:linear-gradient(145deg,#fff,#f8f9ff);
+  }
+  .support-icon{
+    border-radius:10px;
+    background:linear-gradient(135deg,#edf0ff,#e9f9fb);
+    color:#5664d9;
+  }
+
+  .quiz-shell{max-width:900px}
+  .quiz-topbar{border-radius:18px;background:rgba(255,255,255,.88)}
+  .q-card{border-radius:22px;border-color:#e3e6f2;box-shadow:0 20px 50px rgba(46,50,105,.08)}
+  .q-num-chip{background:#eef0ff;border-color:#dde1fb;color:#5664d9}
+  .progress-track{background:#e8eaf5}
+  .progress-fill{background:linear-gradient(90deg,#5664d9,#27b6c9)}
+  .opt.selected{border-color:#5664d9;background:#f0f2ff}
+  .result-hero{border:1px solid #e3e6f2;border-radius:24px;background:radial-gradient(circle at 50% 0,#edf0ff,#fff 62%)}
+  .result-seal{border-color:#5664d9}
+
+  @media (max-width:900px){
+    .tickets{grid-template-columns:1fr}
+    .hero-pills{position:static;max-width:none;justify-content:flex-start;margin-top:22px}
+    .letterhead{padding:44px 28px 32px}
+    .lh-top{left:28px;right:28px}
+  }
+  @media (max-width:780px){
+    .auth-card{grid-template-columns:1fr;min-height:auto}
+    .auth-intro{min-height:360px;padding:36px 28px}
+    .auth-intro h1{font-size:42px}
+    .auth-form{padding:34px 26px}
+  }
+  @media (max-width:560px){
+    .wrap{padding-left:10px;padding-right:10px}
+    .auth-screen{padding:10px 0}
+    .auth-card{border-radius:22px}
+    .auth-intro{min-height:330px;padding:30px 22px}
+    .auth-intro h1{font-size:36px}
+    .auth-list{grid-template-columns:1fr}
+    .auth-form h2{font-size:32px}
+    .user-bar{flex-wrap:wrap;border-radius:16px}
+    .user-info{width:100%;margin-bottom:4px}
+    .user-bar .btn{flex:1}
+    .letterhead{min-height:390px;padding:46px 20px 28px;border-radius:22px}
+    .lh-top{left:20px;right:20px}
+    .lh-meta{font-size:9px}
+    .letterhead .eyebrow{margin-top:54px}
+    h1.hero{font-size:44px}
+    .lede{font-size:14px}
+    .stat-row{gap:20px;justify-content:space-between}
+    .stat .num{font-size:26px}
+    .hero-pills{display:grid;gap:8px}
+    .tabs{overflow-x:auto;flex-wrap:nowrap}
+    .tab{flex:0 0 auto}
+    .tickets{grid-template-columns:1fr}
+    .ticket{min-height:0}
+    .board-item{grid-template-columns:1fr}
+  }
 </style>
 </head>
 <body>
@@ -605,7 +935,7 @@
   <!-- ============ QUIZ SCREEN ============ -->
   <section id="quiz-screen" class="hidden quiz-shell">
     <div class="quiz-topbar">
-      <button class="back-btn" onclick="goHome()">&lt;- Testlarga qaytish</button>
+      <button class="back-btn" onclick="goHome()">← Testlarga qaytish</button>
       <div class="clock" id="clock-box">
         <span class="clock-dot" id="clock-dot"></span>
         <span class="clock-num" id="timer-num">120</span>
@@ -633,8 +963,8 @@
     </div>
 
     <div class="nav-row">
-      <button class="btn btn-ghost" onclick="skipQuestion()">O'tkazib yuborish -></button>
-      <button class="btn btn-primary" id="next-btn" disabled onclick="nextQuestion()">Keyingisi -&gt;</button>
+      <button class="btn btn-ghost" onclick="skipQuestion()">O'tkazib yuborish →</button>
+      <button class="btn btn-primary" id="next-btn" disabled onclick="nextQuestion()">Keyingisi →</button>
     </div>
   </section>
 
@@ -672,7 +1002,7 @@ function loadBestScores(){return serverScores;}
 function saveBestScore(quizId,pct){serverScores[quizId]=Math.max(serverScores[quizId]||0,pct);}
 async function api(path,method='GET',data){
  const response=await fetch(path,{method,headers:{'Content-Type':'application/json','X-ATT-Request':'1'},...(data===undefined?{}:{body:JSON.stringify(data)})});
- if(!(response.headers.get('content-type')||'').includes('application/json'))throw Error('Server vaqtincha javob bermadi (HTTP '+response.status+'). 30-60 soniya kutib qayta urinib ko'ring.');
+ if(!(response.headers.get('content-type')||'').includes('application/json'))throw Error('Server vaqtincha javob bermadi (HTTP '+response.status+'). 30-60 soniya kutib qayta urinib koring.');
  const result=await response.json();if(!response.ok)throw Error(result.error||'Server bilan aloqa xatosi (HTTP '+response.status+')');return result;
 }
 let currentAttempt=null;
