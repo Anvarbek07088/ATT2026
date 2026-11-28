@@ -96,7 +96,7 @@ async function telegramNewRequest(name,email){
  const group=await telegramChat();
  const {rows}=await query("SELECT l.telegram_id,u.role,u.is_owner,u.permissions FROM telegram_links l JOIN users u ON u.id=l.user_id WHERE u.active AND u.role='admin'");
  const admins=rows.filter(u=>allowed(u,'user_block'));
- for(const u of admins)await telegramSend(u.telegram_id,"Yangi kirish so'rovi!\nIsm: "+name+'\nEmail: '+email+'\nSo'rovlar: /requests\n'+TELEGRAM_ADMIN_URL);
+ for(const u of admins)await telegramSend(u.telegram_id,"Yangi kirish so'rovi!\nIsm: "+name+'\nEmail: '+email+"\nSo'rovlar: /requests\n"+TELEGRAM_ADMIN_URL);
  if(group&&!admins.some(u=>u.telegram_id===group))await telegramNotify("Digital Ustoz: yangi kirish so'rovi!\nAdmin panelda tasdiqlash kutilmoqda.\n"+TELEGRAM_ADMIN_URL);
 }
 async function botCommand(message){
@@ -203,7 +203,7 @@ app.post('/api/admin/notifications/confirm-pair',auth,admin,wrap(async(req,res)=
 app.post('/api/register',rateLimit({windowMs:60*60*1000,limit:5,standardHeaders:true,legacyHeaders:false,message:{error:"So'rovlar limiti tugadi. Bir soatdan keyin urinib ko'ring."}}),wrap(async(req,res)=>{
  const email=emailNorm(req.body.email),name=String(req.body.name||'').trim(),p=req.body.password;
  if(!emailValid(email)||!name||name.length>120||!passwordValid(p)||req.body.consent!==true)return res.status(400).json({error:'Ism, email, 12 belgili parol va rozilik kerak'});
- const r=await query("WITH registered AS (INSERT INTO users(email,name,password_hash,active,pending) VALUES($1,$2,$3,FALSE,TRUE) ON CONFLICT DO NOTHING RETURNING id), logged AS (INSERT INTO activity(user_id,kind,detail) SELECT id,'registration_requested',\"Kirish so'rovi\" FROM registered RETURNING user_id) SELECT id FROM registered",[email,name,passwordHash(p)]);
+ const r=await query("WITH registered AS (INSERT INTO users(email,name,password_hash,active,pending) VALUES($1,$2,$3,FALSE,TRUE) ON CONFLICT DO NOTHING RETURNING id), logged AS (INSERT INTO activity(user_id,kind,detail) SELECT id,'registration_requested',$4 FROM registered RETURNING user_id) SELECT id FROM registered",[email,name,passwordHash(p),"Kirish so'rovi"]);
  res.json({ok:true,message:"So'rov ko'rib chiqiladi. Yangi emailingiz bo'lsa, u admin panelda kutilayotgan so'rovlar ro'yxatida ko'rinadi. Oldin hisob ochilgan bo'lsa, admin bilan bog'laning."});
  // The registration response never waits for an external notification.
  if(r.rowCount)void telegramNewRequest(name,email).catch(()=>console.warn('Telegram notification failed; registration saved'));
